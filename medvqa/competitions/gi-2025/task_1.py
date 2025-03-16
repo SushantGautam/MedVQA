@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess as sp
 import time
+import shutil  # Add this import
 
 MEDVQA_SUBMIT = True if os.environ.get(
     '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
@@ -65,7 +66,8 @@ else:
     print("🚀 Preparing for submission 🚀")
     file_path_to_upload = os.path.join(
         snap_dir, f"{hf_username}_{current_timestamp}_task1.py")
-    os.copy(os.path.join(snap_dir, file_from_validation), file_path_to_upload)
+    shutil.copy(os.path.join(snap_dir, file_from_validation),
+                file_path_to_upload)  # Use shutil.copy here
     result = client.predict(
         file=handle_file(file_path_to_upload),
         api_name="/UploadSubmission"
