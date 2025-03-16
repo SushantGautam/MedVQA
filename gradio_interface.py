@@ -16,9 +16,9 @@ submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]
 
 def refresh_submissions():
     global hub_path, submissions
-    # if hub_path and Path(hub_path).exists():
-    #     shutil.rmtree(hub_path, ignore_errors=True)
-    #     print("Deleted existing submissions")
+    if hub_path and Path(hub_path).exists():
+        shutil.rmtree(hub_path, ignore_errors=True)
+        print("Deleted existing submissions")
 
     hub_path = snapshot_download(repo_type="dataset",
                                  repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
@@ -45,7 +45,8 @@ hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 
 def time_ago(submitted_time):
-    delta = datetime.now(timezone.utc) - submitted_time
+    delta = datetime.now(timezone.utc) - datetime.fromtimestamp(
+        int(submitted_time) / 1000, tz=timezone.utc)
     if delta.days > 0:
         return f"{delta.days} days ago"
     elif delta.seconds // 3600 > 0:
