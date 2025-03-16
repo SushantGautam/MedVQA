@@ -2,19 +2,18 @@ import sys
 import argparse
 
 
-def get_parser():
-    parser = argparse.ArgumentParser(description='Task 1 specific arguments')
-    parser.add_argument('--example_arg', type=str,
-                        help='An example argument for Task 1')
-    return parser
-
-
-def main(submission_repo, example_arg):
-    print(
-        f"Running GI-2025 Task 1 with repository: {submission_repo} and example_arg: {example_arg}")
+def main(repo, task_name, verbose=False):
+    print(f"Running {task_name} with repository: {repo}")
+    if verbose:
+        print("Verbose mode is enabled")
 
 
 if __name__ == '__main__':
-    parser = get_parser()
+    parser = argparse.ArgumentParser(description='Run GI-1015 Task 1 (VQA)')
+    parser.add_argument('repo1', type=str, help='Repository path')
+    parser.add_argument('task_name1', type=str, help='Name of the task')
+    parser.add_argument('--verbose1', action='store_true',
+                        help='Enable verbose mode')
+
     args = parser.parse_args()
-    main(args.submission_repo, args.example_arg)
+    main(args.repo1, args.task_name1, args.verbose1)
