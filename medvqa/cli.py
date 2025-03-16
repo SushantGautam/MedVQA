@@ -10,15 +10,7 @@ If it still cannot solve the problem, don't hesitate to add an issue at https://
 ⚠️⚠️⚠️'''
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='MedVQA CLI', allow_abbrev=False)
-    parser.add_argument('--competition', type=str, required=True,
-                        help='Name of the competition (e.g., gi-2025)')
-    parser.add_argument('--task', type=str, required=True,
-                        help='Task number (1 or 2)')
-    args, unknown = parser.parse_known_args()
-
+def validate(args, unk_args, submit=False):
     # Dynamically find the base directory of the MedVQA library
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,9 +24,32 @@ def main():
     if not os.path.isfile(task_file):
         raise FileNotFoundError(
             f"Task '{args.task}' does not exist! Need to update library?"+report)
-    subprocess.run(
-        ['python', task_file] + unknown)
+    if submit:
+        subprocess.run(['python', task_file] + unk_args,
+                       env={**os.environ, "_MEDVQA_SUBMIT_FLAG_": "TRUE"})
+    else:
+        subprocess.run(
+            ['python', task_file] + unk_args)
 
 
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser(description='MedVQA CLI')
+    subparsers = parser.add_subparsers(
+        dest='command', required=True, help="Either 'validate' or 'validate_and_submit'")
+
+    for cmd in ['validate', 'validate_and_submit']:
+        subparser = subparsers.add_parser(cmd)
+        subparser.add_argument(
+            '--competition', required=True, help='Name of the competition (e.g., gi-2025)')
+        subparser.add_argument('--task', required=True,
+                               help='Task number (1 or 2)')
+
+    args, _unk_args = parser.parse_known_args()
+    if args.command == 'validate':
+        validate(args, _unk_args)
+    else:
+        validate(args, _unk_args, submit=True)
+
+
+if __name__ == "__main__":
     main()

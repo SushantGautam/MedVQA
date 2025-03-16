@@ -1,19 +1,51 @@
+from huggingface_hub import snapshot_download, login, whoami
 import sys
 import argparse
+import os
+import subprocess as sp
 
 
-def main(repo, verbose=False):
-    print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
-          "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
-    print("🔍 Subtask 1: Algorithm Development for Question Interpretation and Response")
-    print(f"Analyzing submission repository: {repo}")
-    if verbose:
-        print("Verbose mode is enabled")
+MEDVQA_SUBMIT = True if os.environ.get(
+    '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
+parser = argparse.ArgumentParser(description='Run GI-1015 Task 1 (VQA)')
+parser.add_argument('--repo_id', type=str, required=True,
+                    help='Path to the HF submission repository')
+args, _ = parser.parse_known_args()
 
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+submission_file = "submission_task1.py"
+min_library = ["datasets", "transformers"]
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run GI-1015 Task 1 (VQA)')
-    parser.add_argument('--submission_repo', type=str, required=True,
-                        help='Path to the HF submission repository')
-    args, _ = parser.parse_known_args()
-    main(args.submission_repo)
+print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
+      "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
+print("🔍 Subtask 1: Algorithm Development for Question Interpretation and Response")
+print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
+
+try:
+    print(f"Logged in as: {whoami()['name']}")
+except Exception:
+    print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
+    login()
+
+snap_dir = snapshot_download(
+    repo_id=args.repo_id, allow_patterns=[submission_file, "requirements.txt"])
+
+if not os.path.isfile(os.path.join(snap_dir, submission_file)):
+    raise FileNotFoundError(
+        f"Submission file '{submission_file}' not found in the repository!")
+
+print("📦 Making sure of the minimum requirements to run the script 📦")
+sp.run(["python", "-m", "pip", "install"] + min_library, check=True)
+
+if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
+    print(
+        f"📦 Installing requirements from the submission repo: {args.repo_id}/requirements.txt")
+    sp.run(["python", "-m", "pip", "install", "-r",
+            f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
+
+sp.run(["python", f"{snap_dir}/{submission_file}"],
+       cwd=snap_dir, check=True)
+
+breakpoint()
+if MEDVQA_SUBMIT:
+    print("🚀 Preparing for submission 🚀")

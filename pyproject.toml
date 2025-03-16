@@ -5,7 +5,8 @@ description = "Competition Submission CLI for ImageCLEFmed-MedVQA-GI-2025 (https
 readme = "README.md"
 requires-python = ">=3.6"
 dependencies = [
-    # Add your dependencies here
+    "huggingface_hub",
+    "huggingface_hub[hf_transfer]",
 ]
 authors = [
   { name="Sushant Gautam", email="sushant@simula.no" },
