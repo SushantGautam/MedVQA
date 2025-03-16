@@ -12,99 +12,102 @@ SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 hub_dir = None
 
 
-def get_hub_path():
-    global hub_dir
+def refresh_submissions():
+    global hub_dir, submissions
     if hub_dir and Path(hub_dir).exists():
         shutil.rmtree(hub_dir, ignore_errors=True)
 
     hub_path = snapshot_download(repo_type="dataset",
                                  repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
     hub_dir = os.path.dirname(hub_path)  # More robust than split
+    submissions = [{"user": u, "task": t, "submitted_time": ts} for f in os.listdir(
+        hub_path) if f.endswith('.json') for u, ts, t in [f.replace(".json", "").split("-_-_-")]]
     return hub_path
 
 
-hub_path = get_hub_path()
+hub_path = refresh_submissions()
 
-print(f"{SUBMISSION_REPO} downloaded to {get_hub_path()}")
+print(f"{SUBMISSION_REPO} downloaded to {hub_path}")
 # remove strings after snapshot in hub_path
 hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 
 submissions = [
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User1", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(hours=1)},
-    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now(timezone.utc) -
      timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
+    {"user": "User3", "task": "task1", "submitted_time": datetime.now(timezone.utc) -
      timedelta(minutes=30)},
+
     # ... add more sample data as needed ...
 ]
 
 
 def time_ago(submitted_time):
-    delta = datetime.now() - submitted_time
+    delta = datetime.now(timezone.utc) - submitted_time
     if delta.days > 0:
         return f"{delta.days} days ago"
     elif delta.seconds // 3600 > 0:
