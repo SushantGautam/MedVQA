@@ -68,7 +68,7 @@ def display_submissions(task_type="all", search_query=""):
         refresh_submissions()
     print("Displaying submissions...", submissions)
     filtered_submissions = filter_submissions(task_type, search_query)
-    return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
+    return gr.update(value=[[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions])
 
 
 def add_submission(file):
@@ -104,8 +104,8 @@ def refresh_page():
 
 
 # Define Gradio interface components
-output_table = gr.Dataframe(
-    headers=["User", "Task", "Submitted Time"], value=display_submissions(), scale=5,)
+output_table = gr.Dataframe(headers=[
+                            "User", "Task", "Submitted Time"], interactive=False, value=display_submissions(), scale=5,)
 task_type_dropdown = gr.Dropdown(
     choices=["all", "task1", "task2"], value="all", label="Task Type")
 search_box = gr.Textbox(value="", label="Search User")
