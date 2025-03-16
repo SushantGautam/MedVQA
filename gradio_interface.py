@@ -27,8 +27,9 @@ def refresh_submissions():
     if not os.path.exists(hub_path):
         os.makedirs(hub_path)  # empty repo case
     print("os.listdir(hub_path):", os.listdir(hub_path))
-    json_files = [f.split("/")[-1] for f in glob.glob(hub_path + "/**/*.json", recursive = True) if f.endswith('.json')]
-    print("Downloaded submissions: ", json_files)
+    all_jsons = glob.glob(hub_path + "/**/*.json", recursive=True)
+    print("Downloaded submissions: ", all_jsons)
+    json_files = [f.split("/")[-1] for f in all_jsons]
     submissions = []
     for file in json_files:
         username, sub_timestamp, task = file.replace(
@@ -119,10 +120,11 @@ upload_button = gr.File(label="Upload JSON", file_types=["json"])
 # Create a tabbed interface
 with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
     with gr.Tab("View Submissions"):
+        gr.Markdown("### Submissions Table")
         gr.Interface(
             fn=display_submissions,
             inputs=[task_type_dropdown, search_box],
-            outputs=output_table,  # Update this line
+            outputs=output_table,
             title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
             description="Filter and search submissions by task type and user."
         )
