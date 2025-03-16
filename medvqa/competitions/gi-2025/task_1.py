@@ -38,12 +38,12 @@ if os.path.isfile(os.path.join(snap_dir, "predictions.json")):
     os.remove(os.path.join(snap_dir, "predictions.json"))
 
 print("📦 Making sure of the minimum requirements to run the script 📦")
-sp.run(["python", "-m", "pip", "install"] + min_library, check=True)
+sp.run(["python", "-m", "pip", "install", "-q"] + min_library, check=True)
 
 if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
     print(
         f"📦 Installing requirements from the submission repo: {args.repo_id}/requirements.txt")
-    sp.run(["python", "-m", "pip", "install", "-r",
+    sp.run(["python", "-m", "pip", "install", "-q", "-r",
             f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
 
 sp.run(["python", f"{snap_dir}/{submission_file}"],
