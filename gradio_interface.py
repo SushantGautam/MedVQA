@@ -1,13 +1,15 @@
 import gradio as gr
 import json
 from datetime import datetime, timezone, timedelta
-from huggingface_hub import upload_file
-from huggingface_hub import hf_hub_download
+from huggingface_hub import upload_file, snapshot_download
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 
 
-# Sample data structure to hold submission information
-hf_hub_download(repo_id="SUBMISSION_REPO")
+def get_hub_path():
+    return snapshot_download(repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
+
+
+print(f"{SUBMISSION_REPO} downloaded to {get_hub_path()}")
 
 submissions = [
     {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
