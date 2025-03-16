@@ -27,8 +27,8 @@ def refresh_submissions():
     if not os.path.exists(hub_path):
         os.makedirs(hub_path)  # empty repo case
     print("os.listdir(hub_path):", os.listdir(hub_path))
-    json_files = [f for f in glob.glob(os.path.join(
-        hub_path, "**/*.json"), recursive=True) if f.endswith('.json')]
+    json_files = [f.split("/") for f in glob.glob(os.path.join(
+        hub_path, "**/*.json")[-1], recursive=True) if f.endswith('.json')]
     print("Downloaded submissions: ", json_files)
     submissions = []
     for file in json_files:
