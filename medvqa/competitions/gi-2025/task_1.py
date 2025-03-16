@@ -45,6 +45,8 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
 
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
+print(
+    f"🎉 The submission script ran successfully, the intermediate files are at {snap_dir}")
 
 breakpoint()
 if MEDVQA_SUBMIT:
