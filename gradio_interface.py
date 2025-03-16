@@ -23,6 +23,8 @@ def refresh_submissions():
     hub_path = snapshot_download(repo_type="dataset",
                                  repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
     print("Downloaded submissions to: ", hub_path)
+    if not os.path.exists(hub_path):
+        os.makedirs(hub_path)  # empty repo case
     print("os.listdir(hub_path):", os.listdir(hub_path))
     json_files = [f for f in os.listdir(hub_path) if f.endswith('.json')]
     print("Downloaded submissions: ", json_files)
