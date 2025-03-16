@@ -95,6 +95,7 @@ def add_submission(file):
             path_in_repo=task+"/"+file.split("/")[-1],
             repo_id=SUBMISSION_REPO
         )
+        refresh_submissions()
         submissions.append(
             {"user": username, "task": task, "submitted_time": submission_time})
         return "💪🏆🎉 Submissions added successfully! Visit this URL ⬆️ to see the entry."
