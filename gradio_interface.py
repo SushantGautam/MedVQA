@@ -116,7 +116,7 @@ def add_submission(file):
 
 
 def refresh_page():
-    return "API server is alive!"
+    return "Pong! Submission server is alive! 😊"
 
 
 # Define Gradio interface components

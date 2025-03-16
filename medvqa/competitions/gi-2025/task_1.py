@@ -1,3 +1,4 @@
+from gradio_client import Client
 from gradio_client import Client, handle_file
 from huggingface_hub import snapshot_download, login, whoami
 import sys
@@ -31,6 +32,13 @@ try:
 except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
+
+print("💓 Communicating with the Submission Server: Ping!")
+result = client.predict(
+    api_name="/RefreshAPI"
+)
+print(result)
+
 
 hf_username = whoami()['name']
 assert len(hf_username) > 0, "🚫 HuggingFace login failed for some reason"
