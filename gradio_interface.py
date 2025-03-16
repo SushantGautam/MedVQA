@@ -2,10 +2,13 @@ import gradio as gr
 import json
 from datetime import datetime, timezone, timedelta
 from huggingface_hub import upload_file
+from huggingface_hub import hf_hub_download
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 
 
 # Sample data structure to hold submission information
+hf_hub_download(repo_id="SUBMISSION_REPO")
+
 submissions = [
     {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
      timedelta(hours=1)},
@@ -115,7 +118,7 @@ def add_submission(file):
         username, sub_timestamp, task = file.replace(
             ".json", "").split("-_-_-")
         submission_time = datetime.fromtimestamp(
-            sub_timestamp / 1000, tz=timezone.utc)
+            int(sub_timestamp) / 1000, tz=timezone.utc)
         assert task in ["task1", "task2"], "Invalid task type"
         assert len(username) > 0, "Invalid username"
         assert submission_time < datetime.now(), "Invalid submission time"
