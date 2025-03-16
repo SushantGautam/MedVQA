@@ -6,6 +6,7 @@ import argparse
 import os
 import subprocess as sp
 import time
+from datetime import datetime, timezone
 import shutil  # Add this import
 
 MEDVQA_SUBMIT = True if os.environ.get(
@@ -80,6 +81,9 @@ else:
         file=handle_file(file_path_to_upload),
         api_name="/add_submission"
     )
+    print({"User": hf_username, "Task": "task1",
+           "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC"
+           })
     print(result)
     print("Visit this URL to see the entry: 👇")
     Client("SushantGautam/medvqa")
