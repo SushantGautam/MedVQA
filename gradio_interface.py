@@ -46,7 +46,7 @@ hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 
 def time_ago(submitted_time):
-    return datetime.fromtimestamp(int(submitted_time), tz=timezone.utc) + " UTC"
+    return str(datetime.fromtimestamp(int(submitted_time), tz=timezone.utc)) + " UTC"
 
 
 def filter_submissions(task_type, search_query):
