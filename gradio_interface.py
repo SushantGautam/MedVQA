@@ -146,6 +146,7 @@ def add_submission(file):
             timezone.utc), "Invalid submission time"
         print("Adding submission...", username, task, submission_time)
         upload_file(
+            repo_type="dataset",
             path_or_fileobj=file,
             path_in_repo=task+"/"+file.split("/")[-1],
             repo_id=SUBMISSION_REPO
