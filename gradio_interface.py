@@ -88,8 +88,6 @@ def add_submission(file):
             repo_id=SUBMISSION_REPO
         )
         refresh_submissions()
-        submissions.append(
-            {"user": username, "task": task, "submitted_time": submission_time})
         return "💪🏆🎉 Submissions registered successfully to the system!"
     except Exception as e:
         raise Exception(f"Error adding submission: {e}")
