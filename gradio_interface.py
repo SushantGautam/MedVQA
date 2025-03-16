@@ -42,7 +42,7 @@ submissions = [
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
-         {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
@@ -52,7 +52,7 @@ submissions = [
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
-         {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
+    {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
@@ -62,17 +62,7 @@ submissions = [
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
-         {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
-     timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
-     timedelta(minutes=30)},
-    {"user": "User1", "task": "task1", "submitted_time": datetime.now() -
-     timedelta(hours=1)},
     {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
-     timedelta(days=1)},
-    {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
-     timedelta(minutes=30)},
-         {"user": "User2", "task": "task2", "submitted_time": datetime.now() -
      timedelta(days=1)},
     {"user": "User3", "task": "task1", "submitted_time": datetime.now() -
      timedelta(minutes=30)},
@@ -125,6 +115,10 @@ def add_submission(file):
         return f"Error: {str(e)}"
 
 
+def refresh_page():
+    return "API server is alive!"
+
+
 # Define Gradio interface components
 output_table = gr.Dataframe(
     headers=["User", "Task", "Submitted Time"], value=display_submissions(), scale=5,)
@@ -151,6 +145,15 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
             outputs="text",
             title="Upload Submissions",
             description="Upload a JSON file to add new submissions."
+        )
+    with gr.Tab("Refresh API", visible=False):
+        gr.Interface(
+            api_name="RefreshAPI",
+            fn=refresh_page,
+            inputs=[],
+            outputs="text",
+            title="Refresh API",
+            description="Hidden interface to refresh the API."
         )
 
 demo.launch()
