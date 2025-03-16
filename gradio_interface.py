@@ -113,7 +113,7 @@ def add_submission(file):
             data = json.load(f)
 
         username, sub_timestamp, task = file.replace(
-            ".json", "").split("|")
+            ".json", "").split("-_-_-")
         submission_time = datetime.fromtimestamp(
             sub_timestamp / 1000, tz=timezone.utc)
         assert task in ["task1", "task2"], "Invalid task type"
@@ -122,7 +122,7 @@ def add_submission(file):
         print("Adding submission...", username, task, submission_time)
         upload_file(
             path_or_fileobj=file,
-            path_in_repo=task+"/"+file.split("-_-_-")[-1],
+            path_in_repo=task+"/"+file.split("/")[-1],
             repo_id=SUBMISSION_REPO
         )
         submissions.append(
