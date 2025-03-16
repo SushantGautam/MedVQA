@@ -104,15 +104,11 @@ def display_submissions(task_type="all", search_query=""):
 
 
 def add_submission(file):
-    try:
-        new_submissions = json.load(file)
-        for submission in new_submissions:
-            submission["submitted_time"] = datetime.strptime(
-                submission["submitted_time"], "%Y-%m-%d %H:%M:%S")
-            submissions.append(submission)
-        return "Submissions added successfully!"
-    except Exception as e:
-        return f"Error: {str(e)}"
+    with open(file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    print("Adding submission...", data)
+    print(data)
+    return "Submissions added successfully!"
 
 
 def refresh_page():
@@ -133,19 +129,16 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
         gr.Interface(
             fn=display_submissions,
             inputs=[task_type_dropdown, search_box],
-            outputs=output_table,
+            outputs=output_table,  # Update this line
             title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
             description="Filter and search submissions by task type and user."
         )
-    with gr.Tab("Upload Submission", visible=False):
-        gr.Interface(
-            api_name="UploadSubmission",
-            fn=add_submission,
-            inputs=upload_button,
-            outputs="text",
-            title="Upload Submissions",
-            description="Upload a JSON file to add new submissions."
-        )
+    with gr.Tab("Upload Submission", visible=True):
+        file_input = gr.File(label="Upload JSON", file_types=["json"])
+        upload_output = gr.Textbox(label="Result")  # Add this line
+        file_input.upload(add_submission, file_input,
+                          upload_output)
+
     with gr.Tab("Refresh API", visible=False):
         gr.Interface(
             api_name="RefreshAPI",
