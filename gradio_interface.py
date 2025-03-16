@@ -90,7 +90,7 @@ def add_submission(file):
         refresh_submissions()
         submissions.append(
             {"user": username, "task": task, "submitted_time": submission_time})
-        return "💪🏆🎉 Submissions added successfully! Visit this URL ⬆️ to see the entry."
+        return "💪🏆🎉 Submissions registered successfully to the system!"
     except Exception as e:
         raise Exception(f"Error adding submission: {e}")
 

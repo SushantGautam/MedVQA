@@ -81,3 +81,5 @@ else:
         api_name="/add_submission"
     )
     print(result)
+    print("Visit this URL to see the entry: 👇")
+    Client("SushantGautam/medvqa")
