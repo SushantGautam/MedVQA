@@ -21,21 +21,21 @@ def main():
                         help='Path to the submission repository')
 
     args = parser.parse_args()
-    print("Running with arguments:", args)
+
+    # Dynamically find the base directory of the MedVQA library
+    base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Check if competition directory exists
-    competition_dir = os.path.join(
-        '/Users/sgautam/Documents/MedVQA', args.competition)
+    competition_dir = os.path.join(base_dir, 'competitions', args.competition)
     if not os.path.isdir(competition_dir):
         raise FileNotFoundError(
-            f"Competition '{args.competition}' does not exist! Need to update library?"+report)
-
+            f"Competition '{args.competition}' does not exist at {competition_dir}! Need to update library?"+report)
     # Check if task file exists
-    task_file = os.path.join(competition_dir, f'task{args.task}', 'run.py')
+    task_file = os.path.join(competition_dir, f'task_{args.task}', 'run.py')
     if not os.path.isfile(task_file):
-        raise FileNotFoundError(f"Task '{args.task}' does not exist!"+report)
-    script_path = f'medvqa/{args.competition}/task{args.task}/run.py'
-    subprocess.run(['python', script_path, args.submission_repo])
+        raise FileNotFoundError(
+            f"Task '{args.task}' does not exist at {task_file}!"+report)
+    subprocess.run(['python', task_file, args.submission_repo])
 
 
 if __name__ == '__main__':
