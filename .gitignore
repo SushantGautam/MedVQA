@@ -1,3 +1,5 @@
 .venv
 build
 medvqa.egg-info
+dist
+.pypirc
