@@ -8,7 +8,7 @@ setup(
     name='medvqa',
     version='0.1',
     packages=find_packages() +
-    find_packages(include=['*'], where='./competitions/gi-2025**'),
+    find_packages(include=['*'], where='./competitions/gi-2025'),
     entry_points={
         'console_scripts': [
             'medvqa=medvqa.cli:main',
