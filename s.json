@@ -1,0 +1,38 @@
+{
+    "predictions": [
+        {
+            "index": 0,
+            "img_id": "cla820gl0s3nv071u4fgd7xgq",
+            "question": "Are there any abnormalities in the image? Check all that are present.",
+            "answer": "yes"
+        },
+        {
+            "index": 1,
+            "img_id": "cla820gl0s3nv071u4fgd7xgq",
+            "question": "Are there any anatomical landmarks in the image? Check all that are present.",
+            "answer": "none"
+        },
+        {
+            "index": 2,
+            "img_id": "cla820gl0s3nv071u4fgd7xgq",
+            "question": "Are there any instruments in the image? Check all that are present.",
+            "answer": "none"
+        },
+        {
+            "index": 3,
+            "img_id": "cla820gl0s3nv071u4fgd7xgq",
+            "question": "Have all polyps been removed?",
+            "answer": "no"
+        },
+        {
+            "index": 4,
+            "img_id": "cla820gl0s3nv071u4fgd7xgq",
+            "question": "Is this finding easy to detect?",
+            "answer": "yes"
+        }
+    ],
+    "total_time": 56.3061,
+    "memory_used_mb": 0,
+    "model_memory_mb": 0,
+    "gpu_name": "cpu"
+}
