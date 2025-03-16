@@ -13,10 +13,11 @@ Try installing latest version of the library by running the following command:
 def main():
     print("MedVQA CLI")
     parser = argparse.ArgumentParser(description='MedVQA CLI')
-    parser.add_argument('competition', type=str,
+    parser.add_argument('--competition', type=str, required=True,
                         help='Name of the competition (e.g., gi-2025)')
-    parser.add_argument('task', type=str, help='Task number (1 or 2)')
-    parser.add_argument('submission_repo', type=str,
+    parser.add_argument('--task', type=str, required=True,
+                        help='Task number (1 or 2)')
+    parser.add_argument('--submission_repo', type=str, required=True,
                         help='Path to the submission repository')
 
     args = parser.parse_args()
