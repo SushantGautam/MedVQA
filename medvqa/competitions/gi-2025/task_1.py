@@ -22,7 +22,7 @@ print("🔍 Subtask 1: Algorithm Development for Question Interpretation and Res
 print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
 
 try:
-    print(f"Logged in as: {whoami()['name']}")
+    print(f"Logged in to HuggingFace as: {whoami()['name']}")
 except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
