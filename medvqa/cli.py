@@ -5,8 +5,8 @@ import os
 
 report = '''\n⚠️⚠️⚠️\n
 Try installing latest version of the library by running the following command:
-    pip install git+https://github.com/SushantGautam/MedVQA.git
-If you cannot solve the problem, don't hesitate to add an issue at https://github.com/SushantGautam/MedVQA/issues with the log above! We will try to solve the problem ASAP. Can also interact with us on Discord: https://discord.gg/22V9huwc3R.\n
+    pip install -u medvqa
+If it still cannot solve the problem, don't hesitate to add an issue at https://github.com/SushantGautam/MedVQA/issues with the log above! We will try to solve the problem ASAP. Can also interact with us on Discord: https://discord.gg/22V9huwc3R.\n
 ⚠️⚠️⚠️'''
 
 

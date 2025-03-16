@@ -1,6 +1,6 @@
 # MedVQA
 
-A CLI tool for MedVQA competition.
+A CLI tool for MedVQA competition (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025).
 
 ## Installation
 
