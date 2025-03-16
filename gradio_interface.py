@@ -21,7 +21,7 @@ def refresh_submissions():
         print("Deleted existing submissions")
 
     hub_path = snapshot_download(repo_type="dataset",
-                                 repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
+                                 repo_id=SUBMISSION_REPO, allow_patterns=['**/*.json'])
     print("Downloaded submissions to: ", hub_path)
     if not os.path.exists(hub_path):
         os.makedirs(hub_path)  # empty repo case
