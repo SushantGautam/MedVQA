@@ -51,5 +51,7 @@ sp.run(["python", f"{snap_dir}/{submission_file}"],
 print(
     f"🎉 The submission script ran successfully, the intermediate files are at {snap_dir}")
 
-if MEDVQA_SUBMIT:
+if not MEDVQA_SUBMIT:
+    print("\n You can now run medvqa validate_and_submit .... command to submit the task.")
+else:
     print("🚀 Preparing for submission 🚀")
