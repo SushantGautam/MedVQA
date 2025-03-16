@@ -34,6 +34,9 @@ if not os.path.isfile(os.path.join(snap_dir, submission_file)):
     raise FileNotFoundError(
         f"Submission file '{submission_file}' not found in the repository!")
 
+if os.path.isfile(os.path.join(snap_dir, "predictions.json")):
+    os.remove(os.path.join(snap_dir, "predictions.json"))
+
 print("📦 Making sure of the minimum requirements to run the script 📦")
 sp.run(["python", "-m", "pip", "install"] + min_library, check=True)
 
@@ -48,6 +51,5 @@ sp.run(["python", f"{snap_dir}/{submission_file}"],
 print(
     f"🎉 The submission script ran successfully, the intermediate files are at {snap_dir}")
 
-breakpoint()
 if MEDVQA_SUBMIT:
     print("🚀 Preparing for submission 🚀")
