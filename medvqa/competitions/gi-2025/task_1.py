@@ -73,7 +73,7 @@ if not MEDVQA_SUBMIT:
 else:
     print("🚀 Preparing for submission 🚀")
     file_path_to_upload = os.path.join(
-        snap_dir, f"{hf_username}_{current_timestamp}_task1.py")
+        snap_dir, f"{hf_username}_{current_timestamp}_task1.json")
     shutil.copy(os.path.join(snap_dir, file_from_validation),
                 file_path_to_upload)  # Use shutil.copy here
     result = client.predict(
