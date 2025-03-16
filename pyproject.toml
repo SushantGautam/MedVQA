@@ -1,7 +1,7 @@
 [project]
 name = "medvqa"
-version = "0.14"
-description = "Competition Submission CLI for [ImageCLEFmed-MedVQA-GI-2025](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
+version = "0.14.2"
+description = "Competition Submission CLI for ImageCLEFmed-MedVQA-GI-2025 (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
 readme = "README.md"
 requires-python = ">=3.6"
 dependencies = [
