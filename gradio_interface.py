@@ -122,7 +122,7 @@ def add_submission(file):
         print("Adding submission...", username, task, submission_time)
         upload_file(
             path_or_fileobj=file,
-            path_in_repo=task+"/"+file.split("/")[-1],
+            path_in_repo=task+"/"+file.split("-_-_-")[-1],
             repo_id=SUBMISSION_REPO
         )
         submissions.append(
