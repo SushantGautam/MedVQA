@@ -16,9 +16,9 @@ submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]
 
 def refresh_submissions():
     global hub_path, submissions
-    if hub_path and Path(hub_path).exists():
-        shutil.rmtree(hub_path, ignore_errors=True)
-        print("Deleted existing submissions")
+    # if hub_path and Path(hub_path).exists():
+    #     shutil.rmtree(hub_path, ignore_errors=True)
+    #     print("Deleted existing submissions")
 
     hub_path = snapshot_download(repo_type="dataset",
                                  repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
