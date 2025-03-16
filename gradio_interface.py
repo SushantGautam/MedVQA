@@ -1,9 +1,10 @@
 import gradio as gr
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from huggingface_hub import upload_file, snapshot_download
 import shutil
 import os
+import glob
 from pathlib import Path
 from huggingface_hub import whoami
 print("Account token used to connect to HuggingFace: ", whoami()['name'])
@@ -26,7 +27,8 @@ def refresh_submissions():
     if not os.path.exists(hub_path):
         os.makedirs(hub_path)  # empty repo case
     print("os.listdir(hub_path):", os.listdir(hub_path))
-    json_files = [f for f in os.listdir(hub_path) if f.endswith('.json')]
+    json_files = [f for f in glob.glob(os.path.join(
+        hub_path, "**/*.json"), recursive=True) if f.endswith('.json')]
     print("Downloaded submissions: ", json_files)
     submissions = []
     for file in json_files:
