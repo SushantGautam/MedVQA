@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='medvqa',
-    version='0.1',
+    version='0.12',
     packages=find_packages() +
     find_packages(include=['*'], where='./competitions/**/'),
     entry_points={
