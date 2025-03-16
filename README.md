@@ -1,6 +1,7 @@
 ---
 sdk: gradio
 sdk_version: 5.21.0
+app_file: gradio_interface.py
 ---
 # MedVQA
 
