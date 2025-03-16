@@ -70,6 +70,7 @@ def display_submissions(task_type="all", search_query=""):
 
 
 def add_submission(file):
+    global submissions
     try:
         print("Received submission: ", file)
         with open(file, 'r', encoding='utf-8') as f:
@@ -90,6 +91,7 @@ def add_submission(file):
             path_in_repo=task+"/"+file.split("/")[-1],
             repo_id=SUBMISSION_REPO
         )
+        submissions = None  # Refresh submissions
         return "💪🏆🎉 Submissions registered successfully to the system!"
     except Exception as e:
         raise Exception(f"Error adding submission: {e}")
