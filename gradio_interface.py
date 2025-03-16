@@ -5,6 +5,8 @@ from huggingface_hub import upload_file, snapshot_download
 import shutil
 import os
 from pathlib import Path
+from huggingface_hub import whoami
+whoami(token=os.getenv("HF_TOKEN"))
 
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 hub_dir = None
