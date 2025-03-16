@@ -1,6 +1,9 @@
 import gradio as gr
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timezone, timedelta
+from huggingface_hub import upload_file
+SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
+
 
 # Sample data structure to hold submission information
 submissions = [
@@ -104,11 +107,27 @@ def display_submissions(task_type="all", search_query=""):
 
 
 def add_submission(file):
-    with open(file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    print("Adding submission...", data)
-    print(data)
-    return "Submissions added successfully!"
+    try:
+        with open(file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        username, sub_timestamp, task = file.replace(
+            ".json", "").split("|")
+        submission_time = datetime.fromtimestamp(
+            sub_timestamp / 1000, tz=timezone.utc)
+        assert task in ["task1", "task2"], "Invalid task type"
+        assert len(username) > 0, "Invalid username"
+        assert submission_time < datetime.now(), "Invalid submission time"
+        print("Adding submission...", username, task, submission_time)
+        upload_file(
+            path_or_fileobj=file,
+            path_in_repo="task1/"+file.split("/")[-1],
+            repo_id=SUBMISSION_REPO
+        )
+        submissions.append(
+            {"user": username, "task": task, "submitted_time": submission_time})
+        return "💪🏆🎉 Submissions added successfully! Visit this URL ⬆️ to see the entry."
+    except Exception as e:
+        raise Exception(f"Error adding submission: {e}")
 
 
 def refresh_page():
