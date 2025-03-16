@@ -108,8 +108,10 @@ def display_submissions(task_type="all", search_query=""):
 
 def add_submission(file):
     try:
+        print("Received submission: ", file)
         with open(file, 'r', encoding='utf-8') as f:
             data = json.load(f)
+
         username, sub_timestamp, task = file.replace(
             ".json", "").split("|")
         submission_time = datetime.fromtimestamp(
