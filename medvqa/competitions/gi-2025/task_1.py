@@ -18,7 +18,6 @@ args, _ = parser.parse_known_args()
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task1.py"
 file_from_validation = "predictions_1.json"
-client = Client("SushantGautam/medvqa")
 
 min_library = ["datasets", "transformers", 'tqdm', "gradio_client"]
 
@@ -33,6 +32,7 @@ except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
 
+client = Client("SushantGautam/medvqa")
 print("💓 Communicating with the Submission Server: Ping!")
 result = client.predict(
     api_name="/RefreshAPI"
@@ -78,6 +78,6 @@ else:
                 file_path_to_upload)  # Use shutil.copy here
     result = client.predict(
         file=handle_file(file_path_to_upload),
-        api_name="/UploadSubmission"
+        api_name="/add_submission"
     )
     print(result)
