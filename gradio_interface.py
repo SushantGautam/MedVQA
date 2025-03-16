@@ -13,10 +13,11 @@ SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 hub_path = None
 
 submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]
+last_submission_update_time = datetime.now(timezone.utc)
 
 
 def refresh_submissions():
-    global hub_path, submissions
+    global hub_path, submissions, last_submission_update_time
     if hub_path and Path(hub_path).exists():
         shutil.rmtree(hub_path, ignore_errors=True)
         print("Deleted existing submissions")
@@ -35,6 +36,8 @@ def refresh_submissions():
             ".json", "").split("-_-_-")
         submissions.append({"user": username, "task": task,
                            "submitted_time": sub_timestamp})
+    last_submission_update_time = datetime.now(timezone.utc)
+
     return hub_path
 
 
@@ -60,7 +63,7 @@ def filter_submissions(task_type, search_query):
 
 
 def display_submissions(task_type="all", search_query=""):
-    if submissions is None:
+    if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).seconds > 3600):
         refresh_submissions()
     filtered_submissions = filter_submissions(task_type, search_query)
     return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
