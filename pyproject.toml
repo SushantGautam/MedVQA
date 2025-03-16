@@ -1,14 +1,14 @@
 [project]
 name = "medvqa"
 version = "0.13"
-description = "Competition Submission CLI for ImageCLEFmed-MedVQA-GI-2025 (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
+description = "Competition Submission CLI for [ImageCLEFmed-MedVQA-GI-2025](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
 readme = "README.md"
 requires-python = ">=3.6"
 dependencies = [
     # Add your dependencies here
 ]
 authors = [
-  { name="Sushant Gautam", email="susant@simula.no" },
+  { name="Sushant Gautam", email="sushant@simula.no" },
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
