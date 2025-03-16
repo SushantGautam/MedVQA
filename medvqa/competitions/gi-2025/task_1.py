@@ -1,9 +1,10 @@
+from gradio_client import Client, handle_file
 from huggingface_hub import snapshot_download, login, whoami
 import sys
 import argparse
 import os
 import subprocess as sp
-
+import time
 
 MEDVQA_SUBMIT = True if os.environ.get(
     '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
@@ -14,7 +15,10 @@ args, _ = parser.parse_known_args()
 
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task1.py"
-min_library = ["datasets", "transformers", 'tqdm']
+file_from_validation = "predictions_1.json"
+client = Client("SushantGautam/medvqa")
+
+min_library = ["datasets", "transformers", 'tqdm', "gradio_client"]
 
 print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
       "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
@@ -27,6 +31,10 @@ except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
 
+hf_username = whoami()['name']
+assert len(hf_username) > 0, "🚫 HuggingFace login failed for some reason"
+current_timestamp = int(time.time())
+
 snap_dir = snapshot_download(
     repo_id=args.repo_id, allow_patterns=[submission_file, "requirements.txt"])
 
@@ -34,8 +42,8 @@ if not os.path.isfile(os.path.join(snap_dir, submission_file)):
     raise FileNotFoundError(
         f"Submission file '{submission_file}' not found in the repository!")
 
-if os.path.isfile(os.path.join(snap_dir, "predictions.json")):
-    os.remove(os.path.join(snap_dir, "predictions.json"))
+if os.path.isfile(os.path.join(snap_dir, file_from_validation)):
+    os.remove(os.path.join(snap_dir, file_from_validation))
 
 print("📦 Making sure of the minimum requirements to run the script 📦")
 sp.run(["python", "-m", "pip", "install", "-q"] + min_library, check=True)
@@ -55,3 +63,11 @@ if not MEDVQA_SUBMIT:
     print("\n You can now run medvqa validate_and_submit .... command to submit the task.")
 else:
     print("🚀 Preparing for submission 🚀")
+    file_path_to_upload = os.path.join(
+        snap_dir, f"{hf_username}_{current_timestamp}_task1.py")
+    os.copy(os.path.join(snap_dir, file_from_validation), file_path_to_upload)
+    result = client.predict(
+        file=handle_file(file_path_to_upload),
+        api_name="/UploadSubmission"
+    )
+    print(result)
