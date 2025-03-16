@@ -6,7 +6,7 @@ import shutil
 import os
 from pathlib import Path
 from huggingface_hub import whoami
-# whoami(token=os.getenv("HF_TOKEN"))
+print("Account token used to connect to HuggingFace: ", whoami()['name'])
 
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 hub_dir = None
@@ -142,7 +142,8 @@ def add_submission(file):
             int(sub_timestamp) / 1000, tz=timezone.utc)
         assert task in ["task1", "task2"], "Invalid task type"
         assert len(username) > 0, "Invalid username"
-        assert submission_time < datetime.now(), "Invalid submission time"
+        assert submission_time < datetime.now(
+            timezone.utc), "Invalid submission time"
         print("Adding submission...", username, task, submission_time)
         upload_file(
             path_or_fileobj=file,
