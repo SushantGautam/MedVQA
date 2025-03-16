@@ -6,7 +6,7 @@ import shutil
 import os
 from pathlib import Path
 from huggingface_hub import whoami
-whoami(token=os.getenv("HF_TOKEN"))
+# whoami(token=os.getenv("HF_TOKEN"))
 
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
 hub_dir = None
@@ -17,8 +17,8 @@ def get_hub_path():
     if hub_dir and Path(hub_dir).exists():
         shutil.rmtree(hub_dir, ignore_errors=True)
 
-    hub_path = snapshot_download(
-        repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
+    hub_path = snapshot_download(repo_type="dataset",
+                                 repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
     hub_dir = os.path.dirname(hub_path)  # More robust than split
     return hub_path
 
