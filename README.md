@@ -1,5 +1,6 @@
 ---
 sdk: gradio
+sdk_version: 5.21.0
 ---
 # MedVQA
 
