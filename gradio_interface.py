@@ -63,7 +63,7 @@ def filter_submissions(task_type, search_query):
 
 
 def display_submissions(task_type="all", search_query=""):
-    if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).seconds > 3600):
+    if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).total_seconds() > 3600):
         refresh_submissions()
     filtered_submissions = filter_submissions(task_type, search_query)
     return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
