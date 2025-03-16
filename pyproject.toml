@@ -7,7 +7,7 @@ requires-python = ">=3.6"
 dependencies = [
     "huggingface_hub",
     "huggingface_hub[hf_transfer]",
-    "gradio_client"
+    "gradio_client==1.3.0"
 ]
 authors = [
   { name="Sushant Gautam", email="sushant@simula.no" },
