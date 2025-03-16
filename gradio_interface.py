@@ -46,16 +46,7 @@ hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 
 def time_ago(submitted_time):
-    delta = datetime.now(timezone.utc) - datetime.fromtimestamp(
-        int(submitted_time), tz=timezone.utc)
-    if delta.days > 0:
-        return f"{delta.days} days ago"
-    elif delta.seconds // 3600 > 0:
-        return f"{delta.seconds // 3600} hours ago"
-    elif delta.seconds // 60 > 0:
-        return f"{delta.seconds // 60} minutes ago"
-    else:
-        return "just now"
+    return datetime.fromtimestamp(int(submitted_time), tz=timezone.utc) + " UTC"
 
 
 def filter_submissions(task_type, search_query):
