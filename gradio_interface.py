@@ -30,6 +30,7 @@ def refresh_submissions():
     print("os.listdir(hub_path):", os.listdir(hub_path))
     all_jsons = glob.glob(hub_path + "/**/*.json", recursive=True)
     json_files = [f.split("/")[-1] for f in all_jsons]
+    print("json_files count:", len(json_files))
     submissions = []
     for file in json_files:
         username, sub_timestamp, task = file.replace(
