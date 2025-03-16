@@ -9,19 +9,21 @@ from huggingface_hub import whoami
 print("Account token used to connect to HuggingFace: ", whoami()['name'])
 
 SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
-hub_dir = None
+hub_path = None
 
 submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]
 
 
 def refresh_submissions():
-    global hub_dir, submissions
-    if hub_dir and Path(hub_dir).exists():
-        shutil.rmtree(hub_dir, ignore_errors=True)
+    global hub_path, submissions
+    if hub_path and Path(hub_path).exists():
+        shutil.rmtree(hub_path, ignore_errors=True)
+        print("Deleted existing submissions")
 
     hub_path = snapshot_download(repo_type="dataset",
                                  repo_id=SUBMISSION_REPO, allow_patterns=['*.json'])
-    hub_dir = os.path.dirname(hub_path)  # More robust than split
+    print("Downloaded submissions to: ", hub_path)
+    print("os.listdir(hub_path):", os.listdir(hub_path))
     json_files = [f for f in os.listdir(hub_path) if f.endswith('.json')]
     print("Downloaded submissions: ", json_files)
     submissions = []
@@ -30,7 +32,6 @@ def refresh_submissions():
             ".json", "").split("-_-_-")
         submissions.append({"user": username, "task": task,
                            "submitted_time": sub_timestamp})
-
     return hub_path
 
 
@@ -64,6 +65,8 @@ def filter_submissions(task_type, search_query):
 
 
 def display_submissions(task_type="all", search_query=""):
+    if submissions is None:
+        refresh_submissions()
     filtered_submissions = filter_submissions(task_type, search_query)
     return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
 
