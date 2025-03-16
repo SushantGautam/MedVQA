@@ -28,7 +28,6 @@ def refresh_submissions():
         os.makedirs(hub_path)  # empty repo case
     print("os.listdir(hub_path):", os.listdir(hub_path))
     all_jsons = glob.glob(hub_path + "/**/*.json", recursive=True)
-    print("Downloaded submissions: ", all_jsons)
     json_files = [f.split("/")[-1] for f in all_jsons]
     submissions = []
     for file in json_files:
@@ -48,7 +47,7 @@ hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 def time_ago(submitted_time):
     delta = datetime.now(timezone.utc) - datetime.fromtimestamp(
-        int(submitted_time) / 1000, tz=timezone.utc)
+        int(submitted_time), tz=timezone.utc)
     if delta.days > 0:
         return f"{delta.days} days ago"
     elif delta.seconds // 3600 > 0:
@@ -85,7 +84,7 @@ def add_submission(file):
         username, sub_timestamp, task = file.replace(
             ".json", "").split("-_-_-")
         submission_time = datetime.fromtimestamp(
-            int(sub_timestamp) / 1000, tz=timezone.utc)
+            int(sub_timestamp), tz=timezone.utc)
         assert task in ["task1", "task2"], "Invalid task type"
         assert len(username) > 0, "Invalid username"
         assert submission_time < datetime.now(
