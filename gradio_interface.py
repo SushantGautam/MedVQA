@@ -93,7 +93,7 @@ def add_submission(file):
             path_in_repo=task+"/"+file.split("/")[-1],
             repo_id=SUBMISSION_REPO
         )
-        submissions = None  # Refresh submissions
+        refresh_submissions()
         return "💪🏆🎉 Submissions registered successfully to the system!"
     except Exception as e:
         raise Exception(f"Error adding submission: {e}")
