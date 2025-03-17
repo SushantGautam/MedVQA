@@ -105,7 +105,7 @@ def refresh_page():
 
 # Define Gradio interface components
 output_table = gr.Dataframe(headers=[
-                            "User", "Task", "Submitted Time"], interactive=False, value=display_submissions(), scale=5,)
+                            "User", "Task", "Submitted Time"], interactive=False, value=[], scale=5,)
 task_type_dropdown = gr.Dropdown(
     choices=["all", "task1", "task2"], value="all", label="Task Type")
 search_box = gr.Textbox(value="", label="Search User")
@@ -137,5 +137,7 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
             title="Refresh API",
             description="Hidden interface to refresh the API."
         )
-    demo.load(display_submissions, inputs=[task_type_dropdown, search_box], outputs=output_table)
+    demo.load(lambda: gr.update(value=[[s["user"], s["task"], s["submitted_time"]]
+              for s in filter_submissions("all", "")]), inputs=[], outputs=output_table)
+
 demo.launch()
