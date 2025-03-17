@@ -137,5 +137,5 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
             title="Refresh API",
             description="Hidden interface to refresh the API."
         )
-
+demo.load(display_submissions, inputs=[task_type_dropdown, search_box], outputs=output_table)
 demo.launch()
