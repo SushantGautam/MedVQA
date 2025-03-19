@@ -8,6 +8,12 @@ import subprocess as sp
 import time
 from datetime import datetime, timezone
 import shutil  # Add this import
+import json
+import os
+from huggingface_hub import HfApi, grant_access
+
+HF_GATE_ACESSLIST = ["sushant@simula.no",
+                     "steven@simula.no", "vajira@simula.no"]
 
 MEDVQA_SUBMIT = True if os.environ.get(
     '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
@@ -77,6 +83,26 @@ else:
         snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task1.json")
     shutil.copy(os.path.join(snap_dir, file_from_validation),
                 file_path_to_upload)  # Use shutil.copy here
+    # add repo_id to the submission file
+    with open(file_path_to_upload, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data['repo_id'] = args.repo_id
+        with open(file_path_to_upload, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+    api = HfApi()
+    api.update_repo_visibility(args.repo_id, private=False)  # Make public
+    api.update_repo_settings(args.repo_id, gated=True)  # Enable gated access
+
+    for user in HF_GATE_ACESSLIST:
+        grant_access(args.repo_id, user)  # Grant access
+
+    print(
+        f'''✅ {args.repo_id} model is now made public, but gated, and is shared with organizers.
+        You should not make the model private or remove/update it until the competition results are announced.
+        Feel feel to re-submit the task if you change the model on the repository.
+        We will notify you if there are any issues with the submission.
+        ''')
+
     result = client.predict(
         file=handle_file(file_path_to_upload),
         api_name="/add_submission"
