@@ -122,7 +122,7 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
             title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
             description="Filter and search submissions by task type and user."
         )
-    with gr.Tab("Upload Submission", visible=True):
+    with gr.Tab("Upload Submission", visible=False):
         file_input = gr.File(label="Upload JSON", file_types=["json"])
         upload_output = gr.Textbox(label="Result")  # Add this line
         file_input.upload(add_submission, file_input,
