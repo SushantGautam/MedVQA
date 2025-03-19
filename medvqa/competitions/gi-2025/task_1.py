@@ -12,8 +12,8 @@ import json
 import os
 from huggingface_hub import HfApi, grant_access
 
-HF_GATE_ACESSLIST = ["sushant@simula.no",
-                     "steven@simula.no", "vajira@simula.no"]
+HF_GATE_ACESSLIST = ["SushantGautam",
+                     "stevenah", "vlbthambawita"]
 
 MEDVQA_SUBMIT = True if os.environ.get(
     '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False

@@ -19,6 +19,6 @@ The library is under heavy development. So, we recommend to always make sure you
 ```bash
 medvqa validate_and_submit --competition=gi-2025 --task=1 --repo_id=...
 ```
-where repo_id is your HuggingFace Model repo id (like SushantGautam/XXModelCheckpoint) submission script, for eg, submission_task1.py file for task 1.
+where repo_id is your HuggingFace Model repo id (like SushantGautam/XXModelCheckpoint) with the submission script as required by the competition organizers, for eg, submission_task1.py file for task 1.
 
 Submission for task 2 is not yet implemented. Will be soon live. Stay tuned.
