@@ -91,7 +91,8 @@ else:
             json.dump(data, f, ensure_ascii=False)
     api = HfApi()
     api.update_repo_visibility(args.repo_id, private=False)  # Make public
-    api.update_repo_settings(args.repo_id, gated=True)  # Enable gated access
+    api.update_repo_settings(
+        args.repo_id, gated='manual')  # Enable gated access
 
     for user in HF_GATE_ACESSLIST:
         grant_access(args.repo_id, user)  # Grant access
