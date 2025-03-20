@@ -93,10 +93,11 @@ else:
     api.update_repo_visibility(args.repo_id, private=False)  # Make public
     api.update_repo_settings(
         args.repo_id, gated='manual')  # Enable gated access
-
     for user in HF_GATE_ACESSLIST:
-        grant_access(args.repo_id, user)  # Grant access
-
+        try:
+            grant_access(args.repo_id, user)  # Grant access
+        except Exception as e:
+            print(user, ":", e)
     print(
         f'''✅ {args.repo_id} model is now made public, but gated, and is shared with organizers.
         You should not make the model private or remove/update it until the competition results are announced.
