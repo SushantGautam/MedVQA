@@ -130,6 +130,8 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
     gr.Markdown("""
 # 🌟 Welcome to the official submission portal for the [MEDVQA-GI 2025](https://www.imageclef.org/2025/medical/vqa) challenge! 🏥🧬
 ### 🚀 [**Challenge Homepage** in GitHub](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) |  📝 [**Register** for ImageCLEF 2025](https://www.imageclef.org/2025#registration)   | 📅 [**Competition Schedule**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#:~:text=Schedule) | 📦 [**Submission Instructions**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system)🔥🔥
+### 📥 [**Available Datasets**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-data) | 💡 [Tasks & Example Training **Notebooks**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-task-descriptions)💥💥       
+
 """)
     with gr.Tab("View Submissions"):
         gr.Markdown("### Submissions Table")
