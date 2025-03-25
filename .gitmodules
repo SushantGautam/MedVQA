@@ -1,0 +1,3 @@
+[submodule "medvqa/competitions/gi-2025/competition-repo"]
+	path = medvqa/competitions/gi-2025/competition-repo
+	url = https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025.git
