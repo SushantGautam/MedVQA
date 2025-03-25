@@ -26,7 +26,8 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task1.py"
 file_from_validation = "predictions_1.json"
 
-min_library = ["datasets", "transformers", 'tqdm', "gradio_client"]
+min_library = ["datasets>=3.4.1", "transformers",
+               'tqdm', "gradio_client>=1.8.0", "medvqa"]
 
 print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
       "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
