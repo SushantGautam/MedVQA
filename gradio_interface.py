@@ -107,12 +107,30 @@ def refresh_page():
 output_table = gr.Dataframe(headers=[
                             "User", "Task", "Submitted Time"], interactive=False, value=[], scale=5,)
 task_type_dropdown = gr.Dropdown(
-    choices=["all", "task1", "task2"], value="all", label="Task Type")
-search_box = gr.Textbox(value="", label="Search User")
+    choices=["all", "task1", "task2"],
+    value="all",
+    label="Task Type",
+    info="Filter submissions by Task 1 (VQA) or Task 2 (Synthetic Image Generation)"
+)
+search_box = gr.Textbox(
+    value="",
+    label="Search by Username",
+    info="Enter a username to filter specific submissions"
+)
+
 upload_button = gr.File(label="Upload JSON", file_types=["json"])
 
 # Create a tabbed interface
-with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
+with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo:
+    # gr.Markdown("""
+    #             # Welcome to the official submission portal for the [MEDVQA-GI 2025](https://www.imageclef.org/2025/medical/vqa) challenge!
+    #             - 🔗 [Challenge Homepage](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) | [Register for ImageCLEF 2025](https://www.imageclef.org/2025#registration)
+    #             - 🔗 [Submission Insructions](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system)
+    #             """)
+    gr.Markdown("""
+# 🌟 Welcome to the official submission portal for the [MEDVQA-GI 2025](https://www.imageclef.org/2025/medical/vqa) challenge! 🏥🧬
+### 🚀 [**Challenge Homepage** in GitHub](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) |  📝 [**Register** for ImageCLEF 2025](https://www.imageclef.org/2025#registration)   | 📅 [**Competition Schedule**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#:~:text=Schedule) | 📦 [**Submission Instructions**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system)🔥🔥
+""")
     with gr.Tab("View Submissions"):
         gr.Markdown("### Submissions Table")
         gr.Interface(
@@ -120,8 +138,15 @@ with gr.Blocks(title="ImageCLEFmed-MEDVQA-GI-2025 Submissions") as demo:
             inputs=[task_type_dropdown, search_box],
             outputs=output_table,
             title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
-            description="Filter and search submissions by task type and user."
+            description="Filter and search submissions by task type and user:"
         )
+        gr.Markdown(
+            f'''
+            🔄 Last refreshed: {last_submission_update_time.strftime('%Y-%m-%d %H:%M:%S')} UTC |  📊 Total Submissions: {len(submissions)}
+
+            💬 For any questions or issues, [contact the organizers](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-organizers) or check the documentation in the [GitHub repo](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025).  Good luck and thank you for contributing to medical AI research! 💪🤖🌍
+            ''')
+
     with gr.Tab("Upload Submission", visible=False):
         file_input = gr.File(label="Upload JSON", file_types=["json"])
         upload_output = gr.Textbox(label="Result")  # Add this line
