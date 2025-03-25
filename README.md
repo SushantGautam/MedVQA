@@ -15,6 +15,7 @@ pip install -U medvqa
 The library is under heavy development. So, we recommend to always make sure you have the latest version installed.
 
 ## Usage
+Check [ImageCLEFmed-MEDVQA-GI-2025 competition repo](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system) for detailed submission instructions.
 
 ```bash
 medvqa validate_and_submit --competition=gi-2025 --task=1 --repo_id=...
