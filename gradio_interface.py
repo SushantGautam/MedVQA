@@ -9,7 +9,7 @@ from pathlib import Path
 from huggingface_hub import whoami
 print("Account token used to connect to HuggingFace: ", whoami()['name'])
 
-SUBMISSION_REPO = "SushantGautam/medvqa-submissions"
+SUBMISSION_REPO = "SimulaMet/medvqa-submissions"
 hub_path = None
 
 submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]

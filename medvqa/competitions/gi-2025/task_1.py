@@ -39,7 +39,7 @@ except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
 
-client = Client("SushantGautam/medvqa")
+client = Client("SimulaMet/medvqa")
 print("💓 Communicating with the Submission Server: Ping!")
 result = client.predict(
     api_name="/RefreshAPI"
@@ -114,4 +114,4 @@ else:
            })
     print(result)
     print("Visit this URL to see the entry: 👇")
-    Client("SushantGautam/medvqa")
+    Client("SimulaMet/medvqa")
