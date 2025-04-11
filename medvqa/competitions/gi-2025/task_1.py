@@ -1,7 +1,5 @@
-from gradio_client import Client
 from gradio_client import Client, handle_file
 from huggingface_hub import snapshot_download, login, whoami
-import sys
 import argparse
 import os
 import subprocess as sp
@@ -9,7 +7,6 @@ import time
 from datetime import datetime, timezone
 import shutil  # Add this import
 import json
-import os
 from huggingface_hub import HfApi, grant_access
 
 HF_GATE_ACESSLIST = ["SushantGautam",
@@ -26,8 +23,8 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task1.py"
 file_from_validation = "predictions_1.json"
 
-min_library = ["datasets>=3.4.1", "transformers",
-               'tqdm', "gradio_client>=1.8.0", "medvqa"]
+min_library = ["datasets>=3.4.1", "transformers", "evaluate",
+               "rouge_score", 'tqdm', "gradio_client>=1.8.0", "medvqa"]
 
 print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
       "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
