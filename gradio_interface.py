@@ -124,18 +124,36 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
     with gr.Tab("View Submissions"):
         gr.Markdown("### Filter and Search Submissions")
 
-        task_type_dropdown = gr.Dropdown(
-            choices=["all", "task1", "task2"], value="all", label="Task Type")
-        search_box = gr.Textbox(
-            label="Search by Username", placeholder="Enter username...")
+        with gr.Row():
+            with gr.Column(scale=1):
+                task_type_dropdown = gr.Dropdown(
+                    choices=["all", "task1", "task2"],
+                    value="all",
+                    label="Task Type"
+                )
+                search_box = gr.Textbox(
+                    label="Search by Username",
+                    placeholder="Enter username..."
+                )
 
-        output_table = gr.Dataframe(
-            headers=["User", "Task", "Submitted Time"], interactive=False, value=[])
+            with gr.Column(scale=2):
+                output_table = gr.Dataframe(
+                    headers=["User", "Task", "Submitted Time"],
+                    interactive=False,
+                    wrap=True,
+                    label="Submissions"
+                )
 
-        task_type_dropdown.change(fn=display_submissions, inputs=[
-                                  task_type_dropdown, search_box], outputs=output_table)
-        search_box.change(fn=display_submissions, inputs=[
-                          task_type_dropdown, search_box], outputs=output_table)
+        task_type_dropdown.change(
+            fn=display_submissions,
+            inputs=[task_type_dropdown, search_box],
+            outputs=output_table
+        )
+        search_box.change(
+            fn=display_submissions,
+            inputs=[task_type_dropdown, search_box],
+            outputs=output_table
+        )
 
         gr.Markdown(
             f'''
