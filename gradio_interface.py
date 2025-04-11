@@ -138,11 +138,12 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
                     placeholder="Enter username..."
                 )
 
-            with gr.Column(scale=2):
+            with gr.Column(scale=6):
                 output_table = gr.Dataframe(
                     headers=["User", "Task", "Submitted Time", "Public Score"],
                     interactive=False,
                     wrap=True,
+                    column_widths=["100px", "50px", "80px", "200px"],
                     label="Submissions"
                 )
 
