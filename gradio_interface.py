@@ -41,14 +41,16 @@ def refresh_submissions():
         os.makedirs(hub_path)
 
     all_jsons = glob.glob(hub_path + "/**/*.json", recursive=True)
-    json_files = [f.split("/")[-1] for f in all_jsons]
-    print("json_files count:", len(json_files))
+    print("json_files count:", len(all_jsons))
 
     submissions = []
-    for file in json_files:
-        username, sub_timestamp, task = file.replace(
+    for file in all_jsons:
+        file_ = file.split("/")[-1]
+        username, sub_timestamp, task = file_.replace(
             ".json", "").split("-_-_-")
-        submissions.append({"user": username, "task": task,
+        json_data = json.load(open(file))
+        public_score = json.dumps(json_data.get("public_scores", {}))
+        submissions.append({"user": username, "task": task, "public_score": public_score,
                            "submitted_time": sub_timestamp})
 
     last_submission_update_time = datetime.now(timezone.utc)
@@ -70,14 +72,14 @@ def filter_submissions(task_type, search_query):
     else:
         filtered = [s for s in submissions if (
             task_type == "all" or s["task"] == task_type) and search_query.lower() in s["user"].lower()]
-    return [{"user": s["user"], "task": s["task"], "submitted_time": time_ago(s["submitted_time"])} for s in filtered]
+    return [{"user": s["user"], "task": s["task"], "public_score": s["public_score"], "submitted_time": time_ago(s["submitted_time"])} for s in filtered]
 
 
 def display_submissions(task_type="all", search_query=""):
     if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).total_seconds() > 3600):
         refresh_submissions()
     filtered_submissions = filter_submissions(task_type, search_query)
-    return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
+    return [[s["user"], s["task"], s["submitted_time"], s["public_score"]] for s in filtered_submissions]
 
 
 def add_submission(file):
@@ -138,7 +140,7 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
 
             with gr.Column(scale=2):
                 output_table = gr.Dataframe(
-                    headers=["User", "Task", "Submitted Time"],
+                    headers=["User", "Task", "Submitted Time", "Public Score"],
                     interactive=False,
                     wrap=True,
                     label="Submissions"
