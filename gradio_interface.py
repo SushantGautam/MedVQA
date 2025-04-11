@@ -9,9 +9,18 @@ import os
 import glob
 from pathlib import Path
 from huggingface_hub import whoami
-print("Account token used to connect to HuggingFace: ", whoami()['name'])
+import platform
+
 print(subprocess.check_output(
     [sys.executable, "-m", "pip", "list"]).decode("utf-8"))
+print({
+    "python": platform.python_version(),
+    "os": platform.system(),
+    "platform": platform.platform(),
+    "arch": platform.machine()
+})
+print("Account token used to connect to HuggingFace: ", whoami()['name'])
+
 
 SUBMISSION_REPO = "SimulaMet/medvqa-submissions"
 hub_path = None
