@@ -24,8 +24,7 @@ print("Account token used to connect to HuggingFace: ", whoami()['name'])
 
 SUBMISSION_REPO = "SimulaMet/medvqa-submissions"
 hub_path = None
-
-submissions = None  # [{"user": u, "task": t, "submitted_time": ts}]
+submissions = None
 last_submission_update_time = datetime.now(timezone.utc)
 
 
@@ -35,30 +34,28 @@ def refresh_submissions():
         shutil.rmtree(hub_path, ignore_errors=True)
         print("Deleted existing submissions")
 
-    hub_path = snapshot_download(repo_type="dataset",
-                                 repo_id=SUBMISSION_REPO, allow_patterns=['**/*.json'])
-    print("Downloaded submissions to: ", hub_path)
+    hub_path = snapshot_download(
+        repo_type="dataset", repo_id=SUBMISSION_REPO, allow_patterns=['**/*.json'])
+    print("Downloaded submissions to:", hub_path)
     if not os.path.exists(hub_path):
-        os.makedirs(hub_path)  # empty repo case
-    print("os.listdir(hub_path):", os.listdir(hub_path))
+        os.makedirs(hub_path)
+
     all_jsons = glob.glob(hub_path + "/**/*.json", recursive=True)
     json_files = [f.split("/")[-1] for f in all_jsons]
     print("json_files count:", len(json_files))
+
     submissions = []
     for file in json_files:
         username, sub_timestamp, task = file.replace(
             ".json", "").split("-_-_-")
         submissions.append({"user": username, "task": task,
                            "submitted_time": sub_timestamp})
-    last_submission_update_time = datetime.now(timezone.utc)
 
+    last_submission_update_time = datetime.now(timezone.utc)
     return hub_path
 
 
 hub_path = refresh_submissions()
-
-print(f"{SUBMISSION_REPO} downloaded to {hub_path}")
-# remove strings after snapshot in hub_path
 hub_dir = hub_path.split("snapshot")[0] + "snapshot"
 
 
@@ -79,82 +76,67 @@ def filter_submissions(task_type, search_query):
 def display_submissions(task_type="all", search_query=""):
     if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).total_seconds() > 3600):
         refresh_submissions()
-    print("Displaying submissions...", submissions)
     filtered_submissions = filter_submissions(task_type, search_query)
-    return gr.update(value=[[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions])
+    return [[s["user"], s["task"], s["submitted_time"]] for s in filtered_submissions]
 
 
 def add_submission(file):
     global submissions
     try:
-        print("Received submission: ", file)
         with open(file, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        username, sub_timestamp, task = file.replace(
+        filename = os.path.basename(file)
+        username, sub_timestamp, task = filename.replace(
             ".json", "").split("-_-_-")
         submission_time = datetime.fromtimestamp(
             int(sub_timestamp), tz=timezone.utc)
+
         assert task in ["task1", "task2"], "Invalid task type"
         assert len(username) > 0, "Invalid username"
         assert submission_time < datetime.now(
             timezone.utc), "Invalid submission time"
-        print("Adding submission...", username, task, submission_time)
+
         upload_file(
             repo_type="dataset",
             path_or_fileobj=file,
-            path_in_repo=task+"/"+file.split("/")[-1],
+            path_in_repo=task + "/" + filename,
             repo_id=SUBMISSION_REPO
         )
         refresh_submissions()
         return "💪🏆🎉 Submissions registered successfully to the system!"
     except Exception as e:
-        raise Exception(f"Error adding submission: {e}")
+        return f"❌ Error adding submission: {e}"
 
 
 def refresh_page():
     return "Pong! Submission server is alive! 😊"
 
 
-# Define Gradio interface components
-output_table = gr.Dataframe(headers=[
-                            "User", "Task", "Submitted Time"], interactive=False, value=[], scale=5,)
-task_type_dropdown = gr.Dropdown(
-    choices=["all", "task1", "task2"],
-    value="all",
-    label="Task Type",
-    info="Filter submissions by Task 1 (VQA) or Task 2 (Synthetic Image Generation)"
-)
-search_box = gr.Textbox(
-    value="",
-    label="Search by Username",
-    info="Enter a username to filter specific submissions"
-)
-
-upload_button = gr.File(label="Upload JSON", file_types=["json"])
-
-# Create a tabbed interface
+# Define Gradio Interface
 with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo:
-    # gr.Markdown("""
-    #             # Welcome to the official submission portal for the [MEDVQA-GI 2025](https://www.imageclef.org/2025/medical/vqa) challenge!
-    #             - 🔗 [Challenge Homepage](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) | [Register for ImageCLEF 2025](https://www.imageclef.org/2025#registration)
-    #             - 🔗 [Submission Insructions](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system)
-    #             """)
     gr.Markdown("""
 # 🌟 Welcome to the official submission portal for the [MEDVQA-GI 2025](https://www.imageclef.org/2025/medical/vqa) challenge! 🏥🧬
 ### 🚀 [**Challenge Homepage** in GitHub](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) |  📝 [**Register** for ImageCLEF 2025](https://www.imageclef.org/2025#registration)   | 📅 [**Competition Schedule**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#:~:text=Schedule) | 📦 [**Submission Instructions**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-submission-system)🔥🔥
 ### 📥 [**Available Datasets**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-data) | 💡 [Tasks & Example Training **Notebooks**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-task-descriptions)💥💥       
-
 """)
+
     with gr.Tab("View Submissions"):
-        gr.Markdown("### Submissions Table")
-        gr.Interface(
-            fn=display_submissions,
-            inputs=[task_type_dropdown, search_box],
-            outputs=output_table,
-            title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
-            description="Filter and search submissions by task type and user:"
-        )
+        gr.Markdown("### Filter and Search Submissions")
+
+        task_type_dropdown = gr.Dropdown(
+            choices=["all", "task1", "task2"], value="all", label="Task Type")
+        search_box = gr.Textbox(
+            label="Search by Username", placeholder="Enter username...")
+
+        output_table = gr.Dataframe(
+            headers=["User", "Task", "Submitted Time"], interactive=False, value=[])
+
+        task_type_dropdown.change(fn=display_submissions, inputs=[
+                                  task_type_dropdown, search_box], outputs=output_table)
+        search_box.change(fn=display_submissions, inputs=[
+                          task_type_dropdown, search_box], outputs=output_table)
+
         gr.Markdown(
             f'''
             🔄 Last refreshed: {last_submission_update_time.strftime('%Y-%m-%d %H:%M:%S')} UTC |  📊 Total Submissions: {len(submissions)}
@@ -163,21 +145,17 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
             ''')
 
     with gr.Tab("Upload Submission", visible=False):
-        file_input = gr.File(label="Upload JSON", file_types=["json"])
-        upload_output = gr.Textbox(label="Result")  # Add this line
-        file_input.upload(add_submission, file_input,
-                          upload_output)
+        file_input = gr.File(label="Upload JSON", file_types=[".json"])
+        upload_output = gr.Textbox(label="Upload Result")
+        file_input.upload(fn=add_submission,
+                          inputs=file_input, outputs=upload_output)
 
     with gr.Tab("Refresh API", visible=False):
-        gr.Interface(
-            api_name="RefreshAPI",
-            fn=refresh_page,
-            inputs=[],
-            outputs="text",
-            title="Refresh API",
-            description="Hidden interface to refresh the API."
-        )
-    demo.load(lambda: gr.update(value=[[s["user"], s["task"], s["submitted_time"]]
-              for s in filter_submissions("all", "")]), inputs=[], outputs=output_table)
+        refresh_button = gr.Button("Refresh")
+        status_output = gr.Textbox(label="Status")
+        refresh_button.click(fn=refresh_page, inputs=[], outputs=status_output)
+
+    demo.load(lambda: display_submissions("all", ""),
+              inputs=[], outputs=output_table)
 
 demo.launch()
