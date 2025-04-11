@@ -40,7 +40,7 @@ except Exception:
 client = Client("SimulaMet/medvqa")
 print("💓 Communicating with the Submission Server: Ping!")
 result = client.predict(
-    api_name="/RefreshAPI"
+    api_name="/refresh_page"
 )
 print(result)
 
