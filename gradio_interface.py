@@ -1,3 +1,5 @@
+import sys
+import subprocess
 import gradio as gr
 import json
 from datetime import datetime, timezone
@@ -8,6 +10,8 @@ import glob
 from pathlib import Path
 from huggingface_hub import whoami
 print("Account token used to connect to HuggingFace: ", whoami()['name'])
+print(subprocess.check_output(
+    [sys.executable, "-m", "pip", "list"]).decode("utf-8"))
 
 SUBMISSION_REPO = "SimulaMet/medvqa-submissions"
 hub_path = None
