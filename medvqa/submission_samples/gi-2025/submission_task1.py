@@ -123,6 +123,7 @@ public_scores = {
     'rougeL': rougeL_score,
     'meteor': meteor_score
 }
+print("✨Public scores: ", public_scores)
 
 # Saves predictions to a JSON file
 
