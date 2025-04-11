@@ -5,13 +5,23 @@ import torch
 import json
 import time
 from tqdm import tqdm
+import subprocess
+import platform
+import sys
+
+from evaluate import load
+
+bleu = load("bleu")
+rouge = load("rouge")
+meteor = load("meteor")
+
 
 val_dataset = load_dataset("SimulaMet-HOST/Kvasir-VQA")['raw'].select(range(5))
 predictions = []  # List to store predictions
 
 gpu_name = torch.cuda.get_device_name(
     0) if torch.cuda.is_available() else "cpu"
-device = "CUDA" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def get_mem(): return torch.cuda.memory_allocated(device) / \
@@ -34,10 +44,10 @@ SUBMISSION_INFO = {
     "Country": "Norway",
     "Notes_to_organizers": '''
         eg, We have finetund XXX model
-        This is optional . . 
-        Used data augmentations . . 
+        This is optional . .
+        Used data augmentations . .
         Custom info about the model . .
-        Any insights. . 
+        Any insights. .
         + Any informal things you like to share about this submission.
         '''
 }
@@ -88,14 +98,44 @@ for idx, ex in enumerate(tqdm(val_dataset, desc="Validating")):
 # Ensure all predictions match dataset length
 assert len(predictions) == len(
     val_dataset), "Mismatch between predictions and dataset length"
-# Saves predictions to a JSON file
+
 total_time, final_mem = round(
     time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
 model_mem_used = round(post_model_mem - initial_mem, 2)
 
-output_data = {"submission_info": SUBMISSION_INFO,
+# caulcualtes metrics
+references = [[e] for e in val_dataset['answer']]
+preds = [pred['answer'] for pred in predictions]
+
+bleu_result = bleu.compute(predictions=preds, references=references)
+rouge_result = rouge.compute(predictions=preds, references=references)
+meteor_result = meteor.compute(predictions=preds, references=references)
+bleu_score = bleu_result['bleu']
+rouge1_score = float(rouge_result['rouge1'])
+rouge2_score = float(rouge_result['rouge2'])
+rougeL_score = float(rouge_result['rougeL'])
+meteor_score = float(meteor_result['meteor'])
+public_scores = {
+    'bleu': bleu_score,
+    'rouge1': rouge1_score,
+    'rouge2': rouge2_score,
+    'rougeL': rougeL_score,
+    'meteor': meteor_score
+}
+
+# Saves predictions to a JSON file
+
+output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_scores,
                "predictions": predictions, "total_time": total_time, "time_per_item": total_time / len(val_dataset),
-               "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name, }
+               "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name,
+               "debug": {
+                   "packages": json.loads(subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json"])),
+                   "system": {
+                       "python": platform.python_version(),
+                       "os": platform.system(),
+                       "platform": platform.platform(),
+                       "arch": platform.machine()
+                   }}}
 
 
 with open("predictions_1.json", "w") as f:
