@@ -148,36 +148,37 @@ with gr.Blocks(title="🌟ImageCLEFmed-MEDVQA-GI 2025 Submissions 🌟") as demo
 """)
     with gr.Tab("View Submissions"):
         gr.Markdown("### Submissions Table")
-        gr.Interface(
-            fn=display_submissions,
+
+        with gr.Row():
+            task_type_dropdown = gr.Dropdown(
+                choices=["all", "task1", "task2"],
+                value="all",
+                label="Task Type",
+            )
+            search_box = gr.Textbox(
+                label="Search by Username",
+                placeholder="Enter a username to search"
+            )
+            search_button = gr.Button("Search")
+
+        output_table = gr.Dataframe(
+            headers=["User", "Task", "Submitted Time"],
+            interactive=False,
+            value=[],
+            scale=5,
+        )
+
+        def update_table(task, query):
+            return [[s["user"], s["task"], s["submitted_time"]] for s in filter_submissions(task, query)]
+
+        search_button.click(
+            fn=update_table,
             inputs=[task_type_dropdown, search_box],
-            outputs=output_table,
-            title="ImageCLEFmed-MEDVQA-GI-2025 Submissions",
-            description="Filter and search submissions by task type and user:"
+            outputs=output_table
         )
-        gr.Markdown(
-            f'''
-            🔄 Last refreshed: {last_submission_update_time.strftime('%Y-%m-%d %H:%M:%S')} UTC |  📊 Total Submissions: {len(submissions)}
 
-            💬 For any questions or issues, [contact the organizers](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025#-organizers) or check the documentation in the [GitHub repo](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025).  Good luck and thank you for contributing to medical AI research! 💪🤖🌍
-            ''')
-
-    with gr.Tab("Upload Submission", visible=False):
-        file_input = gr.File(label="Upload JSON", file_types=["json"])
-        upload_output = gr.Textbox(label="Result")  # Add this line
-        file_input.upload(add_submission, file_input,
-                          upload_output)
-
-    with gr.Tab("Refresh API", visible=False):
-        gr.Interface(
-            api_name="RefreshAPI",
-            fn=refresh_page,
-            inputs=[],
-            outputs="text",
-            title="Refresh API",
-            description="Hidden interface to refresh the API."
-        )
-    demo.load(lambda: gr.update(value=[[s["user"], s["task"], s["submitted_time"]]
-              for s in filter_submissions("all", "")]), inputs=[], outputs=output_table)
+        demo.load(fn=lambda: [[s["user"], s["task"], s["submitted_time"]] for s in filter_submissions("all", "")],
+                  inputs=[],
+                  outputs=output_table)
 
 demo.launch()
