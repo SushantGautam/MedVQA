@@ -16,7 +16,7 @@ rouge = load("rouge")
 meteor = load("meteor")
 
 
-val_dataset = load_dataset("SimulaMet-HOST/Kvasir-VQA")['raw'].select(range(5))
+val_dataset = load_dataset("SimulaMet/Kvasir-VQA-test", split="validation")
 predictions = []  # List to store predictions
 
 gpu_name = torch.cuda.get_device_name(
