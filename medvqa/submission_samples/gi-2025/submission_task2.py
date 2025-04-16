@@ -60,7 +60,10 @@ SUBMISSION_INFO = {
 hf_pipe = DiffusionPipeline.from_pretrained(
     "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16).to(device)
 hf_pipe.load_lora_weights("waitwhoami/sd-kvasir-imagen-demo")
-hf_pipe.safety_checker = lambda images, clip_input: (images, False)
+hf_pipe.safety_checker = lambda images, clip_input: (images, None)
+hf_pipe.set_progress_bar_config(disable=True)
+
+print("🔍 Model loaded successfully. Proceeding to image generation...")
 
 # 🏁----------------END  SUBMISISON DETAILS and MODEL LOADING -----------------🏁#
 
@@ -73,14 +76,17 @@ timestamp = time.strftime("%Y%m%d_%H%M%S")
 output_folder = f"generated_images_{timestamp}"
 # Ensure output folder exists
 os.makedirs(output_folder, exist_ok=True)
+# print full path of output folder
+print(f"🔍 Output folder: {os.path.abspath(output_folder)}")
 
 # ✏️✏️___________EDIT SECTION 2: IMAGE GENERATION___________✏️✏️#
 # 🔹 TODO: PARTICIPANTS SHOULD MODIFY THIS STEP  🔹
 # you have access to 'test_prompts'  with all the prompts needed to be generated
 
-batch_size = 2  # Adjust based on your GPU memory
-
-for i in range(0, len(test_prompts), batch_size):
+batch_size = 2  # Adjust based on your GPU memory, number of prompts to generate in one go
+print(
+    f"🔍 We have {len(test_prompts)} prompts and we are generating for two {batch_size} prompts at once. ")
+for i in tqdm(range(0, len(test_prompts), batch_size), desc="🌀 Generating images"):
     batch = test_prompts[i:i + batch_size]
     batched_prompts = [p for p in batch for _ in range(num_per_prompt)]
     images = hf_pipe(batched_prompts).images
@@ -88,6 +94,7 @@ for i in range(0, len(test_prompts), batch_size):
         p_idx = i + j // num_per_prompt + 1
         i_idx = j % num_per_prompt + 1
         img.save(f"{output_folder}/prompt{p_idx:04d}_img{i_idx:04d}.png")
+print("🔍 Image generation completed. Proceeding to feature extraction...")
 # make sure 'output_folder'  with generated images is available with proper filenames
 
 # 🏁________________ END IMAGE GENERATION ________________🏁#
@@ -153,9 +160,11 @@ for f in generated_files:
     prompt_to_images.setdefault(prompt_idx, []).append(
         os.path.join(output_folder, f))
 
+print("🔍 Extracting features for generated images...")
 all_features = {}
 for prompt_idx, paths in tqdm(prompt_to_images.items(), desc="Extracting generated image's features"):
     all_features[prompt_idx] = extract_features_from_paths(paths)
+print("🔍 Feature extraction completed. Proceeding to scoring...")
 
 val_dataset = load_dataset("SimulaMet/Kvasir-VQA-test", split="validation")
 prompt_to_real = requests.get(
@@ -189,6 +198,7 @@ fids, agreements, diversities = [], [], []
 all_generated, all_real = [], []
 per_prompt_data = []
 
+print("🔍 Calculating metrics and preparing output data...")
 for idx_A, idx_B, A, B in tqdm(objectives, desc="Scoring"):
     sim_ab = mean_cosine_sim(A, B)
     fid_ab = fid_score(A, B)
@@ -245,6 +255,10 @@ public_scores = {
 
 
 # end calculating metrics
+print(
+    f"🔍 Metrics calculated. Fidelity: {fidelity_norm}, Agreement: {agreement_norm}, Diversity: {diversity_norm}")
+print("🔍 Saving results to 'predictions_2.json'...")
+
 output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_scores, "total_time": total_time, "time_per_item": total_time / len(val_dataset),
                "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name, "predictions": all_features, "debug": {
                    "packages": json.loads(subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json"])),
@@ -258,6 +272,7 @@ output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_score
 
 with open("predictions_2.json", "w") as f:
     json.dump(output_data, f, indent=4)
+print("✅ Results saved successfully. Script execution completed.")
 print(f"Time: {total_time}s | Mem: {final_mem}MB | Model Load Mem: {model_mem_used}MB | GPU: {gpu_name}")
 print("✅ Scripts Looks Good! Generation process completed successfully. Results saved to 'predictions_2.json'.")
 print("Next Step:\n 1) Upload this submission_task2.py script file to HuggingFace model repository.")

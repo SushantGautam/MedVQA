@@ -69,6 +69,7 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
     sp.run(["python", "-m", "pip", "install", "-q", "-r",
             f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
 
+print("🔍 Starting your script and loading submission details...")
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
 print(
