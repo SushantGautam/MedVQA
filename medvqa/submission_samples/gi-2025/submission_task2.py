@@ -259,7 +259,7 @@ print(
 print("🔍 Saving results to 'predictions_2.json'...")
 
 output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_scores, "total_time": total_time, "time_per_item": total_time / len(val_dataset),
-               "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name, "predictions": json.dumps(all_features.tolist()), "debug": {
+               "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name, "predictions": json.dumps({k: v.tolist() for k, v in all_features.items()}), "debug": {
                    "packages": json.loads(subprocess.check_output([sys.executable, "-m", "pip", "list", "--format=json"])),
                    "system": {
                        "python": platform.python_version(),
