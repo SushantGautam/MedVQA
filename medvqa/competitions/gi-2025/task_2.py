@@ -1,19 +1,116 @@
-import sys
+from gradio_client import Client, handle_file
+from huggingface_hub import snapshot_download, login, whoami
 import argparse
+import os
+import subprocess as sp
+import time
+from datetime import datetime, timezone
+import shutil  # Add this import
+import json
+from huggingface_hub import HfApi, grant_access
+
+HF_GATE_ACESSLIST = ["SushantGautam",
+                     "stevenah", "vlbthambawita"]
+
+MEDVQA_SUBMIT = True if os.environ.get(
+    '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
+parser = argparse.ArgumentParser(
+    description='Run GI-1015 Task 2 (Image Generation)')
+parser.add_argument('--repo_id', type=str, required=True,
+                    help='Path to the HF submission repository')
+args, _ = parser.parse_known_args()
+
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+submission_file = "submission_task1.py"
+file_from_validation = "predictions_2.json"
+
+min_library = ["datasets>=3.4.1", "transformers", "evaluate", "scipy", "scikit-learn"
+               "rouge_score", 'tqdm', "gradio_client>=1.8.0", "medvqa"]
+
+print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
+      "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
+print("🔍 Subtask 2: Creation of High-Fidelity Synthetic GI Images")
+print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
+
+try:
+    print(f"Logged in to HuggingFace as: {whoami()['name']}")
+except Exception:
+    print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
+    login()
+
+client = Client("SimulaMet/medvqa")
+print("💓 Communicating with the Submission Server: Ping!")
+result = client.predict(
+    api_name="/refresh_page"
+)
+print(result)
 
 
-def main(repo, task_name, verbose=False):
-    print(f"Running {task_name} with repository: {repo}")
-    if verbose:
-        print("Verbose mode is enabled")
+hf_username = whoami()['name']
+assert len(hf_username) > 0, "🚫 HuggingFace login failed for some reason"
+current_timestamp = int(time.time())
 
+snap_dir = snapshot_download(
+    repo_id=args.repo_id, allow_patterns=[submission_file, "requirements.txt"])
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run GI-2025 Task 1 (VQA)')
-    parser.add_argument('repo2', type=str, help='Repository path')
-    parser.add_argument('task_name2', type=str, help='Name of the task')
-    parser.add_argument('--verbose2', action='store_true',
-                        help='Enable verbose mode')
+if not os.path.isfile(os.path.join(snap_dir, submission_file)):
+    raise FileNotFoundError(
+        f"Submission file '{submission_file}' not found in the repository!")
 
-    args = parser.parse_args()
-    main(args.repo2, args.task_name2, args.verbose2)
+if os.path.isfile(os.path.join(snap_dir, file_from_validation)):
+    os.remove(os.path.join(snap_dir, file_from_validation))
+
+print("📦 Making sure of the minimum requirements to run the script 📦")
+sp.run(["python", "-m", "pip", "install", "-q"] + min_library, check=True)
+
+if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
+    print(
+        f"📦 Installing requirements from the submission repo: {args.repo_id}/requirements.txt")
+    sp.run(["python", "-m", "pip", "install", "-q", "-r",
+            f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
+
+sp.run(["python", f"{snap_dir}/{submission_file}"],
+       cwd=snap_dir, check=True)
+print(
+    f"🎉 The submission script ran successfully, the intermediate files are at {snap_dir}")
+
+if not MEDVQA_SUBMIT:
+    print("\n You can now run medvqa validate_and_submit .... command to submit the task.")
+else:
+    print("🚀 Preparing for submission 🚀")
+    file_path_to_upload = os.path.join(
+        snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task1.json")
+    shutil.copy(os.path.join(snap_dir, file_from_validation),
+                file_path_to_upload)  # Use shutil.copy here
+    # add repo_id to the submission file
+    with open(file_path_to_upload, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data['repo_id'] = args.repo_id
+        with open(file_path_to_upload, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+    api = HfApi()
+    api.update_repo_visibility(args.repo_id, private=False)  # Make public
+    api.update_repo_settings(
+        args.repo_id, gated='manual')  # Enable gated access
+    for user in HF_GATE_ACESSLIST:
+        try:
+            grant_access(args.repo_id, user)  # Grant access
+        except Exception as e:
+            print(user, ":", e)
+    print(
+        f'''✅ {args.repo_id} model is now made public, but gated, and is shared with organizers.
+        You should not make the model private or remove/update it until the competition results are announced.
+        Feel feel to re-submit the task if you change the model on the repository.
+        We will notify you if there are any issues with the submission.
+        ''')
+
+    result = client.predict(
+        file=handle_file(file_path_to_upload),
+        api_name="/add_submission"
+    )
+    print({"User": hf_username, "Task": "task1",
+           "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC"
+           })
+    print(result)
+    print("Visit this URL to see the entry: 👇")
+    Client("SimulaMet/medvqa")

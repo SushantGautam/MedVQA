@@ -105,21 +105,7 @@ total_time, final_mem = round(
     time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
 model_mem_used = round(post_model_mem - initial_mem, 2)
 
-# start calculating metrics
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# weights = Inception_V3_Weights.DEFAULT
-# inception = inception_v3(weights=weights).to(DEVICE)
-# inception.eval()
-
-# # --- Preprocessing ---
-# IMG_SIZE = 299
-# preprocess = transforms.Compose([
-#     transforms.Resize((IMG_SIZE, IMG_SIZE)),
-#     transforms.ToTensor(),
-#     transforms.Normalize([0.5]*3, [0.5]*3),
-# ])
-
 modelx = AutoModel.from_pretrained(
     "ikim-uk-essen/BiomedCLIP_ViT_patch16_224", trust_remote_code=True).to(DEVICE)
 processor = AutoProcessor.from_pretrained(
