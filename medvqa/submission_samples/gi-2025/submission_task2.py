@@ -85,7 +85,7 @@ print(f"🔍 Output folder: {os.path.abspath(output_folder)}")
 
 batch_size = 2  # Adjust based on your GPU memory, number of prompts to generate in one go
 print(
-    f"🔍 We have {len(test_prompts)} prompts and we are generating for two {batch_size} prompts at once. ")
+    f"🔍 We have {len(test_prompts)} prompts and we are generating for {batch_size} prompts at once. ")
 for i in tqdm(range(0, len(test_prompts), batch_size), desc="🌀 Generating images"):
     batch = test_prompts[i:i + batch_size]
     batched_prompts = [p for p in batch for _ in range(num_per_prompt)]
