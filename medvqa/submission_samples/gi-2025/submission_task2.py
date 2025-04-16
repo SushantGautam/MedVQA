@@ -246,10 +246,10 @@ diversity_norm = np.mean(diversities)
 
 # --- Output ---
 public_scores = {
-    "fidelity": float(fidelity_norm),
-    "agreement": float(agreement_norm),
-    "diversity": float(diversity_norm),
-    "FBD": float(global_fid)
+    "fidelity": round(float(fidelity_norm), 2),
+    "agreement": round(float(agreement_norm), 2),
+    "diversity": round(float(diversity_norm), 2),
+    "FBD": round(float(global_fid), 2)
 }
 
 
