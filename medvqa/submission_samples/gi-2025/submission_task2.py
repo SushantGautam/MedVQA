@@ -122,7 +122,7 @@ modelx.eval()
 def extract_features(batch):
     inputs = processor(images=batch['image'], return_tensors="pt").to(DEVICE)
     with torch.no_grad():
-        feats = modelx(**inputs).pooler_output
+        feats = modelx(**inputs).last_hidden_state[:, 0, :]
         feats = feats / feats.norm(p=2, dim=-1, keepdim=True)
     return {'features': feats.cpu().numpy()}
 
