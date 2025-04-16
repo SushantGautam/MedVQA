@@ -20,6 +20,4 @@ Check [ImageCLEFmed-MEDVQA-GI-2025 competition repo](https://github.com/simula/I
 ```bash
 medvqa validate_and_submit --competition=gi-2025 --task=1 --repo_id=...
 ```
-where repo_id is your HuggingFace Model repo id (like SushantGautam/XXModelCheckpoint) with the submission script as required by the competition organizers, for eg, submission_task1.py file for task 1.
-
-Submission for task 2 is not yet implemented. Will be soon live. Stay tuned.
+where repo_id is your HuggingFace Model repo id (like SushantGautam/XXModelCheckpoint) with the submission script as required by the competition organizers, for eg, submission_task1.py file for task 1 and submission_task2.py for task 2.
