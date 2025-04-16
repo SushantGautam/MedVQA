@@ -1,3 +1,4 @@
+from sklearn.preprocessing import normalize
 from datasets import Dataset
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.linalg import sqrtm
@@ -123,7 +124,6 @@ def extract_features(batch):
     inputs = processor(images=batch['image'], return_tensors="pt").to(DEVICE)
     with torch.no_grad():
         feats = modelx(**inputs).last_hidden_state[:, 0, :]
-        feats = feats / feats.norm(p=2, dim=-1, keepdim=True)
     return {'features': feats.cpu().numpy()}
 
 
@@ -143,10 +143,13 @@ def fid_score(feat1, feat2):
 
 
 def diversity_score(features):
+    features = normalize(features, axis=1)
     return pdist(features).mean()
 
 
 def mean_cosine_sim(feat1, feat2):
+    feat1 = normalize(feat1, axis=1)
+    feat2 = normalize(feat2, axis=1)
     return cosine_similarity(feat1, feat2).mean()
 
 
