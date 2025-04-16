@@ -21,7 +21,7 @@ parser.add_argument('--repo_id', type=str, required=True,
 args, _ = parser.parse_known_args()
 
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-submission_file = "submission_task1.py"
+submission_file = "submission_task2.py"
 file_from_validation = "predictions_2.json"
 
 min_library = ["datasets>=3.4.1", "transformers", "evaluate", "scipy", "scikit-learn",
@@ -79,7 +79,7 @@ if not MEDVQA_SUBMIT:
 else:
     print("🚀 Preparing for submission 🚀")
     file_path_to_upload = os.path.join(
-        snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task1.json")
+        snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task2.json")
     shutil.copy(os.path.join(snap_dir, file_from_validation),
                 file_path_to_upload)  # Use shutil.copy here
     # add repo_id to the submission file
@@ -108,7 +108,7 @@ else:
         file=handle_file(file_path_to_upload),
         api_name="/add_submission"
     )
-    print({"User": hf_username, "Task": "task1",
+    print({"User": hf_username, "Task": "task2",
            "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC"
            })
     print(result)
