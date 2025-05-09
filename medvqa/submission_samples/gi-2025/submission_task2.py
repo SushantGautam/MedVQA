@@ -242,7 +242,7 @@ all_real = np.array(all_real)
 global_fid = fid_score(all_generated, all_real)
 
 # --- Global Scores ---
-fidelity_norm = np.mean(100 / (1 + np.array(fids)))
+fidelity_norm = np.mean(1000 / (1 + np.array(fids)))
 agreement_norm = np.mean(agreements)
 diversity_norm = np.mean(diversities)
 # final_score = 0.5 * fidelity_norm + 0.3 * agreement_norm + 0.2 * diversity_norm #lets not use this for now
