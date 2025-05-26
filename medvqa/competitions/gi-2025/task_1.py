@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import shutil  # Add this import
 import json
 from huggingface_hub import HfApi, grant_access
+import re
 
 HF_GATE_ACESSLIST = ["SushantGautam",
                      "stevenah", "vlbthambawita"]
@@ -68,6 +69,29 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
     sp.run(["python", "-m", "pip", "install", "-q", "-r",
             f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
 
+
+if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
+    # Patch submission file for challenge evaluation
+    challenge_file = submission_file.replace(".py", "_challenge.py")
+    submission_path = os.path.join(snap_dir, submission_file)
+    challenge_path = os.path.join(snap_dir, challenge_file)
+    with open(submission_path, "r", encoding="utf-8") as f:
+        code = f.read()
+    # Use regex to match the line, ignoring whitespace
+    pattern = r'val_dataset\s*=\s*load_dataset\(\s*["\']SimulaMet/Kvasir-VQA-test["\']\s*,\s*split\s*=\s*["\']validation["\']\s*\)'
+    new_line = 'val_dataset = load_dataset("SimulaMet/Kvasir-VQA-private", split="test")'
+    if re.search(pattern, code):
+        code = re.sub(pattern, new_line, code)
+        with open(challenge_path, "w", encoding="utf-8") as f:
+            f.write(code)
+        submission_file = challenge_file
+        print(f"🔄 Challenge file created at: {challenge_path}")
+    else:
+        print("⚠️ Challenge patch not applied: expected line not found in submission file.")
+        os.exit(
+            "Please check the submission file for compatibility with challenge evaluation.")
+
+
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
 print(
@@ -113,3 +137,26 @@ else:
     print(result)
     print("Visit this URL to see the entry: 👇")
     Client("SimulaMet/medvqa")
+
+
+if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
+    src_json = os.path.join(snap_dir, "predictions_1.json")
+    if os.path.isfile(src_json):
+        with open(src_json, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        # Remove 'debug' key if present
+        data.pop("debug", None)
+        # Rename 'public_scores' to 'challenge_scores' if present
+        if "public_scores" in data:
+            data["challenge_scores"] = data.pop("public_scores")
+        # Get Team_Name from submission_info
+        team_name = data.get("submission_info", {}).get(
+            "Team_Name", "unknown_team")
+        team_name_safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', team_name)
+        out_json = os.path.join(os.getcwd(), f"task1_{team_name_safe}.json")
+        with open(out_json, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"✅ Copied and processed predictions to: {out_json}")
+    else:
+        print("❌ predictions_1.json not found in snapshot directory!")
+    # === End: Post-processing predictions_1.json ===
