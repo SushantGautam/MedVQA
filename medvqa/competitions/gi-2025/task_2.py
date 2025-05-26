@@ -81,6 +81,7 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
     if "SimulaMet/Kvasir-VQA-test" in code:
         code = code.replace("SimulaMet/Kvasir-VQA-test",
                             "SimulaMet/Kvasir-VQA-private")
+        code = code.replace('"validation"', '"test"')
         # Comment out specific lines
         lines = code.splitlines()
         for i, line in enumerate(lines):
