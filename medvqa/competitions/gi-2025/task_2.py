@@ -1,5 +1,5 @@
 from gradio_client import Client, handle_file
-from huggingface_hub import snapshot_download, login, whoami, hf_hub_download
+from huggingface_hub import snapshot_download, login, whoami
 import argparse
 import os
 import subprocess as sp
@@ -98,6 +98,7 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
         else:
             insert_idx = None
         new_block = [
+            'from huggingface_hub import hf_hub_download',
             'prompt_to_real = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "real_mapping", repo_type="dataset")))',
             'jsons__ = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "imagen-test", repo_type="dataset")))',
         ]
