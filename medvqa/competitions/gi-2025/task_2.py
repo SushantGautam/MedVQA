@@ -1,5 +1,5 @@
 from gradio_client import Client, handle_file
-from huggingface_hub import snapshot_download, login, whoami
+from huggingface_hub import snapshot_download, login, whoami, hf_hub_download
 import argparse
 import os
 import subprocess as sp
@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import shutil  # Add this import
 import json
 from huggingface_hub import HfApi, grant_access
+import re
 
 HF_GATE_ACESSLIST = ["SushantGautam",
                      "stevenah", "vlbthambawita"]
@@ -69,6 +70,50 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
     sp.run(["python", "-m", "pip", "install", "-q", "-r",
             f"{snap_dir}/requirements.txt"], cwd=snap_dir, check=True)
 
+if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
+    # Patch submission file for challenge evaluation
+    challenge_file = submission_file.replace(".py", "_challenge.py")
+    submission_path = os.path.join(snap_dir, submission_file)
+    challenge_path = os.path.join(snap_dir, challenge_file)
+    with open(submission_path, "r", encoding="utf-8") as f:
+        code = f.read()
+    # Replace only the dataset string
+    if "SimulaMet/Kvasir-VQA-test" in code:
+        code = code.replace("SimulaMet/Kvasir-VQA-test",
+                            "SimulaMet/Kvasir-VQA-private")
+        # Comment out specific lines
+        lines = code.splitlines()
+        for i, line in enumerate(lines):
+            if ("huggingface.co/datasets" in line or
+                re.search(r'^\s*prompt_to_real\s*=', line) or
+                    re.search(r'^\s*jsons__\s*=', line)):
+                if not line.lstrip().startswith("#"):
+                    leading_ws = len(line) - len(line.lstrip())
+                    lines[i] = line[:leading_ws] + "# " + line[leading_ws:]
+        # Insert new code block after 'import requests'
+        for i, line in enumerate(lines):
+            if "import requests" in line:
+                insert_idx = i + 1
+                break
+        else:
+            insert_idx = None
+        new_block = [
+            'prompt_to_real = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "real_mapping", repo_type="dataset")))',
+            'jsons__ = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "imagen-test", repo_type="dataset")))',
+        ]
+        if insert_idx is not None:
+            lines[insert_idx:insert_idx] = new_block
+        code = "\n".join(lines)
+        with open(challenge_path, "w", encoding="utf-8") as f:
+            f.write(code)
+        submission_file = challenge_file
+        print(f"🔄 Challenge file created at: {challenge_path}")
+    else:
+        print(
+            "⚠️ Challenge patch not applied: expected string not found in submission file.")
+        os.exit(
+            "Please check the submission file for compatibility with challenge evaluation.")
+
 print("🔍 Starting your script and loading submission details...")
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
@@ -115,3 +160,25 @@ else:
     print(result)
     print("Visit this URL to see the entry: 👇")
     Client("SimulaMet/medvqa")
+
+if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
+    src_json = os.path.join(snap_dir, "predictions_2.json")
+    if os.path.isfile(src_json):
+        with open(src_json, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        # Remove 'debug' key if present
+        data.pop("debug", None)
+        # Rename 'public_scores' to 'challenge_scores' if present
+        if "public_scores" in data:
+            data["challenge_scores"] = data.pop("public_scores")
+        # Get Team_Name from submission_info
+        team_name = data.get("submission_info", {}).get(
+            "Team_Name", "unknown_team")
+        team_name_safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', team_name)
+        out_json = os.path.join(os.getcwd(), f"task2_{team_name_safe}.json")
+        with open(out_json, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"✅ Copied and processed predictions to: {out_json}")
+    else:
+        print("❌ predictions_1.json not found in snapshot directory!")
+    # === End: Post-processing predictions_1.json ===
