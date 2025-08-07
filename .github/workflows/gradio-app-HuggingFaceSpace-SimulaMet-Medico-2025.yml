@@ -1,4 +1,4 @@
-name: Sync to SimulaMet/MedVQA HuggingFace space
+name: Sync to SimulaMet/Medico-2025 HuggingFace space
 on:
   # push:
   #   branches: [main]
