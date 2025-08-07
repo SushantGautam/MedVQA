@@ -1,11 +1,12 @@
 ---
 sdk: gradio
-sdk_version: 5.24.0
+sdk_version: 5.41.1
 app_file: gradio_launcher.py
 ---
 # MedVQA
 
-A CLI tool for MedVQA competition (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025).
+A CLI tool used for multiple MedVQA competitions:
+ [ImageCLEFmed-MEDVQA-GI-2025] (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025) and [MediaEval-Medico-2025](https://github.com/simula/MediaEval-Medico-2025).
 
 ## Installation
 
@@ -14,8 +15,9 @@ pip install -U medvqa
 ```
 The library is under heavy development. So, we recommend to always make sure you have the latest version installed.
 
-## Usage
-Check [MediaEval-Medico-2025 competition repo](https://github.com/simula/MediaEval-Medico-2025#-submission-system) for detailed submission instructions.
+## Example Usage
+Check respective competition repo for detailed submission instructions. For example: 
+ [MediaEval-Medico-2025 competition repo](https://github.com/simula/MediaEval-Medico-2025#-submission-system).
 
 ```bash
 medvqa validate_and_submit --competition=medico-2025 --task=1 --repo_id=...
