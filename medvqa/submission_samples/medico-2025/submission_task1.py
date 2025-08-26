@@ -1,5 +1,5 @@
 from transformers import AutoModelForCausalLM
-from datasets import load_dataset
+from datasets import load_dataset, Image as HfImage
 from transformers import AutoProcessor
 import torch
 import json
@@ -16,7 +16,10 @@ rouge = load("rouge")
 meteor = load("meteor")
 
 
-val_dataset = load_dataset("SimulaMet/Kvasir-VQA-test", split="validation")
+ds = load_dataset("SimulaMet/Kvasir-VQA-x1")["test"]
+ds_shuffled = ds.shuffle(seed=42) # Shuffle with fixed seed for reproducibility
+val_dataset = ds_shuffled.select(range(1500)) # Select first 1500 after shuffle
+val_dataset = val_dataset.cast_column("image", HfImage())
 predictions = []  # List to store predictions
 
 gpu_name = torch.cuda.get_device_name(
