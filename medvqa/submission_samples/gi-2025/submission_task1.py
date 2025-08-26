@@ -55,7 +55,7 @@ SUBMISSION_INFO = {
 # can add necessary library imports here
 
 model_hf = AutoModelForCausalLM.from_pretrained(
-    "SushantGautam/Florence-2-vqa-demo", trust_remote_code=True).to(device)
+    "SushantGautam/Florence-2-vqa-demo", attn_implementation="eager", trust_remote_code=True).to(device)
 processor = AutoProcessor.from_pretrained(
     "microsoft/Florence-2-base-ft", trust_remote_code=True)
 
@@ -82,7 +82,7 @@ for idx, ex in enumerate(tqdm(val_dataset, desc="Validating")):
 
     # 🔹 TODO: PARTICIPANTS CAN MODIFY THE GENERATION AND DECODING METHOD HERE 🔹
     with torch.no_grad():
-        output = model_hf.generate(**inputs)
+        output = model_hf.generate(**inputs, use_cache=False)
     answer = processor.tokenizer.decode(output[0], skip_special_tokens=True)
     # make sure 'answer' variable will hold answer (sentence/word) as str
 # 🏁________________ END ANSWER GENERATION ________________🏁#
@@ -145,4 +145,4 @@ with open("predictions_1.json", "w") as f:
 print(f"Time: {total_time}s | Mem: {final_mem}MB | Model Load Mem: {model_mem_used}MB | GPU: {gpu_name}")
 print("✅ Scripts Looks Good! Generation process completed successfully. Results saved to 'predictions_1.json'.")
 print("Next Step:\n 1) Upload this submission_task1.py script file to HuggingFace model repository.")
-print('''\n 2) Make a submission to the competition:\n Run:: medvqa validate_and_submit --competition=gi-2025 --task=1 --repo_id=...''')
+print('''\n 2) Make a submission to the competition:\n Run:: medvqa validate_and_submit --competition=medico-2025 --task=1 --repo_id=...''')
