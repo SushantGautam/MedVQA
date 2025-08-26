@@ -9,7 +9,7 @@ classifiers = [
 dependencies = [
   "huggingface_hub",
   "huggingface_hub[hf_transfer]",
-  "gradio_client==1.8.0",
+  "gradio_client>=1.8.0",
 ]
 description = "Competition Submission CLI for ImageCLEFmed-MedVQA-GI-2025 (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
 license = {text = "MIT"}
