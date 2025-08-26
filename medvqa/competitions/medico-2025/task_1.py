@@ -38,7 +38,7 @@ except Exception:
     print("⚠️⚠️ Not logged in to HuggingFace! Please get your login token from https://huggingface.co/settings/tokens 🌐")
     login()
 
-client = Client("SimulaMet/medvqa")
+client = Client("SimulaMet/Medico-2025")
 print("💓 Communicating with the Submission Server: Ping!")
 result = client.predict(
     api_name="/refresh_page"
@@ -136,7 +136,7 @@ else:
            })
     print(result)
     print("Visit this URL to see the entry: 👇")
-    Client("SimulaMet/medvqa")
+    Client("SimulaMet/Medico-2025")
 
 
 if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
