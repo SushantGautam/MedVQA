@@ -83,11 +83,12 @@ subm_mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(subm_mod)
 if not hasattr(subm_mod, "SUBMISSION_INFO") or not isinstance(subm_mod.SUBMISSION_INFO, dict):
     raise ValueError("submission_task2.py must contain a dict variable named SUBMISSION_INFO")
-submission_info = subm_mod.SUBMISSION_INFO
 
-# Merge results
-submission_info["results"] = results
-submission_info["public_scores"] = {"note": "will be rated by experts later", }}
+submission_data= {"submission_info": subm_mod.SUBMISSION_INFO}
+submission_data["public_scores"] = {"note": "will be rated by experts later"}
+submission_data["predictions"] = results
+submission_data["repo_id"] = args.repo_id
+
 
 print(f"🎉 Validation checks complete. Snapshot dir: {snap_dir}")
 
@@ -99,7 +100,7 @@ else:
         snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task2.json"
     )
     with open(file_path_to_upload, "w", encoding="utf-8") as f:
-        json.dump(submission_info, f, ensure_ascii=False, indent=2)
+        json.dump(submission_data, f, ensure_ascii=False, indent=2)
 
     # Make the repo public (but gated) and grant access to organizers
     api = HfApi()
