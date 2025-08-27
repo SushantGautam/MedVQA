@@ -15,7 +15,7 @@ HF_GATE_ACESSLIST = ["SushantGautam",
 
 MEDVQA_SUBMIT = True if os.environ.get(
     '_MEDVQA_SUBMIT_FLAG_', 'FALSE') == 'TRUE' else False
-parser = argparse.ArgumentParser(description='Run GI-1015 Task 1 (VQA)')
+parser = argparse.ArgumentParser(description='Run Medico 2025 Task 1 (VQA)')
 parser.add_argument('--repo_id', type=str, required=True,
                     help='Path to the HF submission repository')
 args, _ = parser.parse_known_args()
