@@ -87,6 +87,7 @@ submission_info = subm_mod.SUBMISSION_INFO
 
 # Merge results
 submission_info["results"] = results
+submission_info["public_scores"] = {"note": "will be rated by experts later", }}
 
 print(f"🎉 Validation checks complete. Snapshot dir: {snap_dir}")
 
@@ -124,8 +125,7 @@ We will notify you if there are any issues with the submission.
     print({
         "User": hf_username,
         "Task": "task2",
-        "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC",
-        "score": {"status": "submitted"}
+        "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC"
     })
     print(result)
     print("Visit this URL to see the entry: 👇")
