@@ -27,9 +27,9 @@ file_from_validation = "predictions_1.json"
 min_library = ["datasets>=3.4.1", "transformers", "evaluate",
                "rouge_score", 'tqdm', "gradio_client>=1.8.0"]
 
-print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟",
-      "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
-print("🔍 Subtask 1: Algorithm Development for Question Interpretation and Response")
+print("🌟 MediaEval Medico 2025: VQA (with multimodal explanations) for GastroIntestinal Imaging 🌟",
+      "https://github.com/simula/MediaEval-Medico-2025")
+print("🔍 Subtask 1: AI Performance on Medical Image Question Answering")
 print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
 
 try:
