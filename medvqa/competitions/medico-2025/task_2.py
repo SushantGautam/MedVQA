@@ -22,9 +22,6 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task2.py"
 file_from_validation = "submission_task2.jsonl"  # one object per val_id (1500 lines)
 
-min_library = ["datasets>=3.4.1", "transformers", "evaluate",
-               "rouge_score", 'tqdm', "gradio_client>=1.8.0"]
-
 print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟", "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
 print("💬 Subtask 2: Clinician-Oriented Multimodal Explanations in GI")
 print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
