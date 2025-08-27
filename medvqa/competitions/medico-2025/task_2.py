@@ -22,8 +22,10 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 submission_file = "submission_task2.py"
 file_from_validation = "submission_task2.jsonl"  # one object per val_id (1500 lines)
 
-print("🌟 ImageCLEFmed-MEDVQA-GI-2025 🌟", "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025")
+print("🌟 MediaEval Medico 2025: VQA (with multimodal explanations) for GastroIntestinal Imaging 🌟",
+      "https://github.com/simula/MediaEval-Medico-2025")
 print("💬 Subtask 2: Clinician-Oriented Multimodal Explanations in GI")
+
 print(f"👀 Analyzing submission repository: {args.repo_id} 👀")
 
 try:
