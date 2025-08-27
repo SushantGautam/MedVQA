@@ -1,5 +1,3 @@
-# task_2.py
-
 from gradio_client import Client, handle_file
 from huggingface_hub import snapshot_download, login, whoami
 import argparse
@@ -10,6 +8,8 @@ from datetime import datetime, timezone
 import shutil
 import json
 from huggingface_hub import HfApi, grant_access
+import re
+import importlib.util
 
 HF_GATE_ACESSLIST = ["SushantGautam", "stevenah", "vlbthambawita"]
 
@@ -50,7 +50,6 @@ snap_dir = snapshot_download(
     allow_patterns=[submission_file, file_from_validation]
 )
 
-# Basic presence checks
 subm_path = os.path.join(snap_dir, submission_file)
 jsonl_path = os.path.join(snap_dir, file_from_validation)
 
@@ -59,32 +58,38 @@ if not os.path.isfile(subm_path):
 
 if not os.path.isfile(jsonl_path):
     raise FileNotFoundError(f"Required predictions file '{file_from_validation}' not found in the repository!")
-
+  
 # === Validation of submission_task2.jsonl ===
 print(f"🧪 Validating '{file_from_validation}' formatting…")
-valid_lines = 0
+results = []
 with open(jsonl_path, "r", encoding="utf-8") as f:
     for line_num, line in enumerate(f, start=1):
         stripped = line.strip()
         if not stripped:
-            continue  # ignore blank lines
+            continue
         try:
             obj = json.loads(stripped)
         except json.JSONDecodeError as e:
             raise ValueError(f"Line {line_num} is not valid JSON: {e}")
-
-        # Minimal field presence checks (do not enforce full schema here to stay minimal)
         if "val_id" not in obj:
             raise ValueError(f"Line {line_num} missing required key 'val_id'.")
+        results.append(obj)
 
-        valid_lines += 1
+if len(results) != 1500:
+    raise ValueError(f"❌ '{file_from_validation}' must contain exactly 1500 valid JSON objects. Found: {len(results)}")
+print(f"✅ JSONL formatting OK (exactly {len(results)} lines).")
 
-if valid_lines != 1500:
-    raise ValueError(f"❌ '{file_from_validation}' must contain exactly 1500 non-empty JSON lines. Found: {valid_lines}")
-print(f"✅ JSONL formatting OK (exactly {valid_lines} lines).")
+# === Load SUBMISSION_INFO dict from submission_task2.py ===
+print("📑 Loading SUBMISSION_INFO from submission_task2.py …")
+spec = importlib.util.spec_from_file_location("subm2", subm_path)
+subm_mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(subm_mod)
+if not hasattr(subm_mod, "SUBMISSION_INFO") or not isinstance(subm_mod.SUBMISSION_INFO, dict):
+    raise ValueError("submission_task2.py must contain a dict variable named SUBMISSION_INFO")
+submission_info = subm_mod.SUBMISSION_INFO
 
-# NOTE: For Subtask 2 we DO NOT run the submission script to create predictions.
-print("ℹ️ Skipping execution of the submission script for Subtask 2 (predictions are pre-generated and included).")
+# Merge results
+submission_info["results"] = results
 
 print(f"🎉 Validation checks complete. Snapshot dir: {snap_dir}")
 
@@ -92,17 +97,19 @@ if not MEDVQA_SUBMIT:
     print("\nYou can now run `medvqa validate_and_submit ...` to submit Subtask 2.")
 else:
     print("🚀 Preparing for submission 🚀")
-    # Upload the JSONL file as the artifact
-    file_path_to_upload = os.path.join(snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task2.jsonl")
-    shutil.copy(jsonl_path, file_path_to_upload)
+    file_path_to_upload = os.path.join(
+        snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task2.json"
+    )
+    with open(file_path_to_upload, "w", encoding="utf-8") as f:
+        json.dump(submission_info, f, ensure_ascii=False, indent=2)
 
     # Make the repo public (but gated) and grant access to organizers
     api = HfApi()
-    api.update_repo_visibility(args.repo_id, private=False)   # Make public
-    api.update_repo_settings(args.repo_id, gated='manual')    # Enable gated access
+    api.update_repo_visibility(args.repo_id, private=False)
+    api.update_repo_settings(args.repo_id, gated='manual')
     for user in HF_GATE_ACESSLIST:
         try:
-            grant_access(args.repo_id, user)  # Grant access
+            grant_access(args.repo_id, user)
         except Exception as e:
             print(user, ":", e)
 
@@ -113,8 +120,6 @@ Feel free to re-submit Subtask 2 if you update the repository file(s).
 We will notify you if there are any issues with the submission.
 ''')
 
-    # Hand over the artifact to the server. Subtask 2 has NO public scores;
-    # the server will record it and mark score as {"status": "submitted"}.
     result = client.predict(
         file=handle_file(file_path_to_upload),
         api_name="/add_submission"
@@ -123,9 +128,11 @@ We will notify you if there are any issues with the submission.
         "User": hf_username,
         "Task": "task2",
         "Submitted_time": str(datetime.fromtimestamp(int(current_timestamp), tz=timezone.utc)) + " UTC",
+        "score": {"status": "submitted"}
     })
     print(result)
     print("Visit this URL to see the entry: 👇")
     Client("SimulaMet/Medico-2025")
+
 
 # Optional challenge-evaluate hook intentionally omitted for Subtask 2 (no public scores).
