@@ -113,11 +113,11 @@ preds = [pred['answer'] for pred in predictions]
 bleu_result = bleu.compute(predictions=preds, references=references)
 rouge_result = rouge.compute(predictions=preds, references=references)
 meteor_result = meteor.compute(predictions=preds, references=references)
-bleu_score = round(bleu_result['bleu'], 2)
-rouge1_score = round(float(rouge_result['rouge1']), 2)
-rouge2_score = round(float(rouge_result['rouge2']), 2)
-rougeL_score = round(float(rouge_result['rougeL']), 2)
-meteor_score = round(float(meteor_result['meteor']), 2)
+bleu_score = round(bleu_result['bleu'], 4)
+rouge1_score = round(float(rouge_result['rouge1']), 4)
+rouge2_score = round(float(rouge_result['rouge2']), 4)
+rougeL_score = round(float(rouge_result['rougeL']), 4)
+meteor_score = round(float(meteor_result['meteor']), 4)
 
 public_scores = {
     'bleu': bleu_score,
