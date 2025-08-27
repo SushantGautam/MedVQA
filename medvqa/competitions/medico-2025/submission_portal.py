@@ -120,7 +120,7 @@ with gr.Blocks(title="🌟 MediaEval Medico 2025 Submissions 🌟") as demo:
     gr.Markdown("""
 # 🌟 Welcome to the official submission portal for the **[MediaEval Medico 2025](https://multimediaeval.github.io/editions/2025/tasks/medico/)** challenge! 🏥🔍  
 ### 📋 [**GitHub Repository**](https://github.com/simula/MediaEval-Medico-2025) | 🔗 [**MediaEval 2025 Task Page**](https://multimediaeval.github.io/editions/2025/tasks/medico/) 
-### 📦 [**Available Datasets**](https://github.com/simula/MediaEval-Medico-2025#-dataset-overview-kvasir-vqa-x1) | 🧠 [**Task Details & Training Resources**](https://github.com/simula/MediaEval-Medico-2025?tab=readme-ov-file#-task-descriptions) | 📝 [**Submission Instructions**](https://github.com/simula/MediaEval-Medico-2025#submission)  
+### 📦 [**Available Datasets**](https://github.com/simula/MediaEval-Medico-2025#-dataset-overview-kvasir-vqa-x1) | 🧠 [**Task Details & Training Resources**](https://github.com/simula/MediaEval-Medico-2025?tab=readme-ov-file#-task-descriptions) | 📝 [**Submission Instructions**](https://github.com/simula/MediaEval-Medico-2025#-submission-system)  
 ---
 """)
 
