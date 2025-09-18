@@ -57,7 +57,7 @@ SUBMISSION_INFO = {
 
 # 🔹 TODO: PARTICIPANTS MUST LOAD THEIR MODEL HERE, EDIT AS NECESSARY FOR YOUR MODEL 🔹
 hf_model_base = "google/paligemma-3b-pt-224"
-hf_model_adapters = ['SushantGautam/Kvasir-VQA-x1-pali3b-lora']
+hf_model_adapters = ['SushantGautam/Kvasir-VQA-x1-pali3b-lora'] #<------- this is your finetuned one
 # os.environ['MAX_PIXELS'] = '1003520' # may need variables used during training
 
 engine = PtEngine(hf_model_base, adapters =hf_model_adapters, max_batch_size=1, use_hf=True)
