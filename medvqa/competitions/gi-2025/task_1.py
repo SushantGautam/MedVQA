@@ -94,7 +94,7 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
 
 if os.environ.get("_MEDVQA_FULL_EVALUATE_FLAG_", "FALSE") == "TRUE":
     # Patch submission file for challenge evaluation
-    challenge_file = submission_file
+    challenge_file = submission_file.replace(".py", "_full_evaluate.py")
     submission_path = os.path.join(snap_dir, submission_file)
     challenge_path = os.path.join(snap_dir, challenge_file)
     with open(submission_path, "r", encoding="utf-8") as f:
