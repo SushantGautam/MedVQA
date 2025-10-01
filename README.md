@@ -15,6 +15,12 @@ pip install -U medvqa
 ```
 The library is under heavy development. So, we recommend to always make sure you have the latest version installed.
 
+For development:
+```bash
+pip install git+https://github.com/SushantGautam/MedVQA.git
+
+```
+
 ## Example Usage
 Check respective competition repo for detailed submission instructions. For example: 
  [MediaEval-Medico-2025 competition repo](https://github.com/simula/MediaEval-Medico-2025#-submission-system).
