@@ -106,12 +106,12 @@ if os.environ.get("_MEDVQA_FULL_EVALUATE_FLAG_", "FALSE") == "TRUE":
         with open(challenge_path, "w", encoding="utf-8") as f:
             f.write(code)
         submission_file = challenge_file
-        print(f"🔄 Challenge file created at: {challenge_path}")
+        print(f"🔄 Full evaluation file created at: {challenge_path}")
     else:
-        print("⚠️ Challenge patch not applied: expected line not found in submission file.")
+        print("⚠️ Full evaluation patch not applied: expected line not found in submission file.")
         os.exit(
-            "Please check the submission file for compatibility with challenge evaluation.")
-            
+            "Please check the submission file for compatibility with full evaluation.")
+
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
 print(
