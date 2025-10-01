@@ -18,6 +18,7 @@ The library is under heavy development. So, we recommend to always make sure you
 For development:
 ```bash
 pip install git+https://github.com/SushantGautam/MedVQA.git
+Also have full_evaluate and challenge_evaluate modules for detailed evaluation for the competition organizers.
 
 ```
 
