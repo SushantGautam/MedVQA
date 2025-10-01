@@ -91,7 +91,27 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
         os.exit(
             "Please check the submission file for compatibility with challenge evaluation.")
 
-
+if os.environ.get("_MEDVQA_FULL_EVALUATE_FLAG_", "FALSE") == "TRUE":
+    # Patch submission file for challenge evaluation
+    challenge_file = submission_file.replace(".py", "_full_evaluate.py")
+    submission_path = os.path.join(snap_dir, submission_file)
+    challenge_path = os.path.join(snap_dir, challenge_file)
+    with open(submission_path, "r", encoding="utf-8") as f:
+        code = f.read()
+    # Use regex to match the line, ignoring whitespace
+    pattern = r'val_dataset\s*=\s*ds_shuffled\.select\(\s*range\(\s*1500\s*\)\s*\)'
+    new_line = 'val_dataset = ds_shuffled'
+    if re.search(pattern, code):
+        code = re.sub(pattern, new_line, code)
+        with open(challenge_path, "w", encoding="utf-8") as f:
+            f.write(code)
+        submission_file = challenge_file
+        print(f"🔄 Challenge file created at: {challenge_path}")
+    else:
+        print("⚠️ Challenge patch not applied: expected line not found in submission file.")
+        os.exit(
+            "Please check the submission file for compatibility with challenge evaluation.")
+            
 sp.run(["python", f"{snap_dir}/{submission_file}"],
        cwd=snap_dir, check=True)
 print(
