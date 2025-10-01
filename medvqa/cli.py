@@ -10,7 +10,7 @@ If it still cannot solve the problem, don't hesitate to add an issue at https://
 ⚠️⚠️⚠️'''
 
 
-def validate(args, unk_args, submit=False, challenge_evaluate=False):
+def validate(args, unk_args, submit=False, challenge_evaluate=False, full_evaluate=False):
     # Dynamically find the base directory of the MedVQA library
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,6 +27,9 @@ def validate(args, unk_args, submit=False, challenge_evaluate=False):
     if submit:
         subprocess.run(['python', task_file] + unk_args,
                        env={**os.environ, "_MEDVQA_SUBMIT_FLAG_": "TRUE"})
+    elif full_evaluate:
+        subprocess.run(['python', task_file] + unk_args,
+                       env={**os.environ, "_MEDVQA_FULL_EVALUATE_FLAG_": "TRUE"})
     elif challenge_evaluate:
         subprocess.run(['python', task_file] + unk_args,
                        env={**os.environ, "_MEDVQA_CHALLENGE_EVALUATE_FLAG_": "TRUE"})
@@ -38,9 +41,9 @@ def validate(args, unk_args, submit=False, challenge_evaluate=False):
 def main():
     parser = argparse.ArgumentParser(description='MedVQA CLI')
     subparsers = parser.add_subparsers(
-        dest='command', required=True, help="Either 'validate', 'validate_and_submit', or 'challenge_evaluate'")
+        dest='command', required=True, help="Either 'validate', 'validate_and_submit', 'full_evaluate, or 'challenge_evaluate'")
 
-    for cmd in ['validate', 'validate_and_submit', 'challenge_evaluate']:
+    for cmd in ['validate', 'validate_and_submit', 'challenge_evaluate', 'full_evaluate']:
         subparser = subparsers.add_parser(cmd)
         subparser.add_argument(
             '--competition', required=True, help='Name of the competition (e.g., gi-2025)')
@@ -54,6 +57,8 @@ def main():
         validate(args, _unk_args, submit=True)
     elif args.command == 'challenge_evaluate':
         validate(args, _unk_args, challenge_evaluate=True)
+    elif args.command == 'full_evaluate':
+        validate(args, _unk_args, full_evaluate=True)
 
 
 if __name__ == "__main__":
