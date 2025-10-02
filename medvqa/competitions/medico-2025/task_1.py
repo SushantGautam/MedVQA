@@ -71,34 +71,32 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
 
 
 if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
-        # Patch submission file for challenge evaluation
-        challenge_file = submission_file.replace(".py", "_challenge.py")
-        submission_path = os.path.join(snap_dir, submission_file)
-        challenge_path = os.path.join(snap_dir, challenge_file)
+    challenge_file = submission_file.replace(".py", "_challenge.py")
+    submission_path = os.path.join(snap_dir, submission_file)
+    code = open(submission_path, encoding="utf-8").read()
 
-        with open(submission_path, "r", encoding="utf-8") as f:
-            code = f.read()
+    patches = [
+        (r'ds\s*=\s*load_dataset\(\s*["\']SimulaMet/Kvasir-VQA-x1["\']\)\["test"\]',
+         'val_dataset = load_dataset("SimulaMet/Kvasir-VQA-x1-private")["test"]'),
+        (r'.*ds\.shuffle\s*\(\s*seed\s*=\s*42\s*\).*', ''),
+        (r'.*ds_shuffled\.select\s*\(\s*range\s*\(\s*1500\s*\)\s*\).*', '')
+    ]
 
-        # Patch 1: replace dataset loading line with private dataset
-        pattern1 = r'ds\s*=\s*load_dataset\(\s*["\']SimulaMet/Kvasir-VQA-x1["\']\)\["test"\]'
-        new_line1 = 'ds = load_dataset("SimulaMet/Kvasir-VQA-x1-private")["test"]'
-        code = re.sub(pattern1, new_line1, code)
+    failed = False
+    for i, (pat, repl) in enumerate(patches, 1):
+        code, n = re.subn(pat, repl, code)
+        if n: print(f"✅ Patch {i} applied ({n} change).")
+        else: print(f"❌ Patch {i} not found."); failed = True
 
-        # Patch 2: remove ds.shuffle(seed=42) lines
-        code = re.sub(r'.*ds\.shuffle\s*\(\s*seed\s*=\s*42\s*\).*', '', code)
+    if failed:
+        print("⚠️ Challenge patch not applied: expected line not found.")
+        sys.exit("Please check submission file for compatibility.")
 
-        # Patch 3: remove ds_shuffled.select(range(1500)) lines
-        code = re.sub(r'.*ds_shuffled\.select\s*\(\s*range\s*\(\s*1500\s*\)\s*\).*', '', code)
+    with open(os.path.join(snap_dir, challenge_file), "w", encoding="utf-8") as f:
+        f.write(code)
 
-        with open(challenge_path, "w", encoding="utf-8") as f:
-            f.write(code)
-
-        submission_file = challenge_file    
-        print(f"🔄 Challenge file created at: {challenge_path}")
-    else:
-        print("⚠️ Challenge patch not applied: expected line not found in submission file.")
-        os.exit(
-            "Please check the submission file for compatibility with challenge evaluation.")
+    submission_file = challenge_file
+    print(f"🎉 Challenge file created at: {os.path.join(snap_dir, challenge_file)}")
 
 if os.environ.get("_MEDVQA_FULL_EVALUATE_FLAG_", "FALSE") == "TRUE":
     # Patch submission file for challenge evaluation
