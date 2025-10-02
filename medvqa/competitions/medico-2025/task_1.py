@@ -71,20 +71,29 @@ if os.path.isfile(os.path.join(snap_dir, "requirements.txt")):
 
 
 if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
-    # Patch submission file for challenge evaluation
-    challenge_file = submission_file.replace(".py", "_challenge.py")
-    submission_path = os.path.join(snap_dir, submission_file)
-    challenge_path = os.path.join(snap_dir, challenge_file)
-    with open(submission_path, "r", encoding="utf-8") as f:
-        code = f.read()
-    # Use regex to match the line, ignoring whitespace
-    pattern = r'val_dataset\s*=\s*load_dataset\(\s*["\']SimulaMet/Kvasir-VQA-test["\']\s*,\s*split\s*=\s*["\']validation["\']\s*\)'
-    new_line = 'val_dataset = load_dataset("SimulaMet/Kvasir-VQA-private", split="test")'
-    if re.search(pattern, code):
-        code = re.sub(pattern, new_line, code)
+        # Patch submission file for challenge evaluation
+        challenge_file = submission_file.replace(".py", "_challenge.py")
+        submission_path = os.path.join(snap_dir, submission_file)
+        challenge_path = os.path.join(snap_dir, challenge_file)
+
+        with open(submission_path, "r", encoding="utf-8") as f:
+            code = f.read()
+
+        # Patch 1: replace dataset loading line with private dataset
+        pattern1 = r'ds\s*=\s*load_dataset\(\s*["\']SimulaMet/Kvasir-VQA-x1["\']\)\["test"\]'
+        new_line1 = 'ds = load_dataset("SimulaMet/Kvasir-VQA-x1-private")["test"]'
+        code = re.sub(pattern1, new_line1, code)
+
+        # Patch 2: remove ds.shuffle(seed=42) lines
+        code = re.sub(r'.*ds\.shuffle\s*\(\s*seed\s*=\s*42\s*\).*', '', code)
+
+        # Patch 3: remove ds_shuffled.select(range(1500)) lines
+        code = re.sub(r'.*ds_shuffled\.select\s*\(\s*range\s*\(\s*1500\s*\)\s*\).*', '', code)
+
         with open(challenge_path, "w", encoding="utf-8") as f:
             f.write(code)
-        submission_file = challenge_file
+
+        submission_file = challenge_file    
         print(f"🔄 Challenge file created at: {challenge_path}")
     else:
         print("⚠️ Challenge patch not applied: expected line not found in submission file.")
