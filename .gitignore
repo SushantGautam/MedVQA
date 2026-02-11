@@ -3,3 +3,5 @@ build
 medvqa.egg-info
 dist
 .pypirc
+__pycache__
+*.pyc
