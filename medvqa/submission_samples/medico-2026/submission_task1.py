@@ -46,7 +46,7 @@ SUBMISSION_INFO = {
     "Team_Name": "SimulaMetmedVQA Rangers",
     "Country": "Norway",
     "Notes_to_organizers": '''
-        eg, We have finetund XXX model
+        eg, We have finetuned XXX model
         This is optional . .
         Used data augmentations . .
         Custom info about the model . .
@@ -54,14 +54,28 @@ SUBMISSION_INFO = {
         + Any informal things you like to share about this submission.
         '''
 }
+
 # 🔹 TODO: PARTICIPANTS MUST LOAD THEIR MODEL HERE, EDIT AS NECESSARY FOR YOUR MODEL 🔹
-# can add necessary library imports here
+# 👉 You may add required library imports for your model below.
 
-model_hf = AutoModelForCausalLM.from_pretrained(
-    "SushantGautam/Florence-2-vqa-demo", trust_remote_code=True).to(device)
+from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
+
+model_hf = Qwen3VLForConditionalGeneration.from_pretrained(
+    "sosoai/qwen3_vl_2b_lora_v1", trust_remote_code=True
+).to(device) # 👉 Load your vision-language (or multimodal) model here.
+
 processor = AutoProcessor.from_pretrained(
-    "microsoft/Florence-2-base-ft", trust_remote_code=True)
+    "sosoai/qwen3_vl_2b_lora_v1", trust_remote_code=True
+) # 👉 Load the matching processor / tokenizer for your model.
 
+# 👉 You can further configure preprocessing or generation settings to control how your model should behave.
+processor.image_processor.size = {"shortest_edge": 300, "longest_edge": 600}
+processor.tokenizer.padding_side = "left"
+
+BATCH_SIZE = 32  # 👉 Adjust batch size based on your available GPU memory
+
+# If you encounter issues with your model loading or generation below, please contact us:
+# https://github.com/simula/MediaEval-Medico-2026#organizers
 model_hf.eval()  # Ensure model is in evaluation mode
 # 🏁----------------END  SUBMISISON DETAILS and MODEL LOADING -----------------🏁#
 
@@ -70,33 +84,50 @@ total_time, final_mem = round(
     time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
 model_mem_used = round(post_model_mem - initial_mem, 2)
 
-for idx, ex in enumerate(tqdm(val_dataset, desc="Validating")):
-    question = ex["question"]
-    image = ex["image"].convert(
-        "RGB") if ex["image"].mode != "RGB" else ex["image"]
-    # you have access to 'question' and 'image' variables for each example
+with tqdm(total=len(val_dataset), desc="Validating", unit="samples") as pbar:
+  for batch in batched(enumerate(val_dataset), BATCH_SIZE):
+    pbar.update(len(batch))
+    idxs, exs = zip(*batch)
+    
+    # ✏️✏️___________EDIT SECTION 2: ANSWER GENERATION___________✏️✏️#
 
-# ✏️✏️___________EDIT SECTION 2: ANSWER GENERATION___________✏️✏️#
-    # 🔹 TODO: PARTICIPANTS CAN MODIFY THIS TOKENIZATION STEP IF NEEDED 🔹
-    inputs = processor(text=[question], images=[image],
-                       return_tensors="pt", padding=True)
-    inputs = {k: v.to(device) for k, v in inputs.items()
-              if k not in ['labels', 'attention_mask']}
+    # 👉 Participants: Build your model prompt + generation logic ONLY inside this section.
+    # Do NOT modify batching logic or anything outside EDIT blocks.
 
-    # 🔹 TODO: PARTICIPANTS CAN MODIFY THE GENERATION AND DECODING METHOD HERE 🔹
-    with torch.no_grad():
-        output = model_hf.generate(**inputs)
-    answer = processor.tokenizer.decode(output[0], skip_special_tokens=True)
-    # make sure 'answer' variable will hold answer (sentence/word) as str
-# 🏁________________ END ANSWER GENERATION ________________🏁#
+    prompts = [
+        processor.apply_chat_template(  # You should change how the prompt is constructed
+            [{"role":"system","content":[{"type":"text","text":"You are a medical assistant. Answer in one short sentence."}]},
+            {"role":"user","content":[{"type":"image","image":e["image"]}, {"type":"text","text":e["question"]}]}],
+            tokenize=False, add_generation_prompt=True) for e in exs]
+
+    # 👉 You may replace processor/model calls below with your own model inference logic
+    inputs = processor(text=prompts, images=[e["image"] for e in exs], return_tensors="pt", padding=True)
+    inputs = {k: v.to(model_hf.device) for k, v in inputs.items()}
+
+    with torch.inference_mode(), torch.autocast("cuda", torch.float16):
+        # 👉 Replace model_hf.generate(...) with your custom generation method if needed
+        out = model_hf.generate(**inputs, max_new_tokens=128, do_sample=False)
+
+    # 👉 Ensure outputs from this batch are decoded into a list[str] named `answers`
+    answers = processor.batch_decode(
+        out[:, inputs["input_ids"].shape[1]:],
+        skip_special_tokens=True
+    )
+
+    # for e, a in zip(exs, answers): print("Q:", e["question"], "\nA:", a, "\n") ## print to debug
+
+    #   ___________END SECTION 2: ANSWER GENERATION___________    #
 
 # ⛔ DO NOT EDIT any lines below from here, can edit only upto decoding step above as required. ⛔
-    # Ensures answer is a string
-    assert isinstance(
-        answer, str), f"Generated answer at index {idx} is not a string"
-    # Appends prediction
-    predictions.append(
-        {"index": idx, "img_id": ex["img_id"], "question": ex["question"], "answer": answer})
+
+    assert all(isinstance(a, str) for a in answers), next(f"Non-string answer at index {i}" 
+         for i, a in zip(idxs, answers)
+         if not isinstance(a, str)) # safe test
+
+    predictions.extend(
+        {"index": i, "img_id": e["img_id"], "question": e["question"], "answer": a.strip()}
+        for i, e, a in zip(idxs, exs, answers)
+    )
 
 # Ensure all predictions match dataset length
 assert len(predictions) == len(

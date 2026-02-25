@@ -1,5 +1,5 @@
 import os
-from datasets import load_dataset, Image as HfImage
+from datasets import load_dataset, Image
 import torch
 import json
 import time
@@ -9,17 +9,19 @@ import platform
 import sys
 import tempfile
 from evaluate import load
-from swift.llm import PtEngine, RequestConfig, InferRequest
-# pip install ms-swift
+from swift.infer_engine import TransformersEngine, RequestConfig, InferRequest
 
 bleu = load("bleu")
 rouge = load("rouge")
 meteor = load("meteor")
 
-ds = load_dataset("SimulaMet/Kvasir-VQA-x1")["test"]
-ds_shuffled = ds.shuffle(seed=42) # Shuffle with fixed seed for reproducibility
-val_dataset = ds_shuffled.select(range(1500)) # Select first 1500 after shuffle
-val_dataset = val_dataset.cast_column("image", HfImage())
+val_dataset = (
+    load_dataset("SimulaMet/Kvasir-VQA-x1", split="test")
+    .shuffle(seed=42)
+    .select(range(1500))
+    .cast_column("image", Image(decode=False))  # prevent PIL decoding
+)
+
 predictions = []  # List to store predictions
 
 gpu_name = torch.cuda.get_device_name(
@@ -46,7 +48,7 @@ SUBMISSION_INFO = {
     "Team_Name": "SimulaMetmedVQA Rangers",
     "Country": "Norway",
     "Notes_to_organizers": '''
-        eg, We have finetund XXX model
+        eg, We have finetuned XXX model
         This is optional . .
         Used data augmentations . .
         Custom info about the model . .
@@ -56,61 +58,66 @@ SUBMISSION_INFO = {
 }
 
 # 🔹 TODO: PARTICIPANTS MUST LOAD THEIR MODEL HERE, EDIT AS NECESSARY FOR YOUR MODEL 🔹
-hf_model_base = "google/paligemma-3b-pt-224"
-hf_model_adapters = ['SushantGautam/Kvasir-VQA-x1-pali3b-lora'] #<------- this is your finetuned one
-# os.environ['MAX_PIXELS'] = '1003520' # may need variables used during training
+# 👉 You may add required library imports for your model below.
 
-engine = PtEngine(hf_model_base, adapters =hf_model_adapters, max_batch_size=1, use_hf=True)
-request_config = RequestConfig(max_tokens=512, temperature=0)
+hf_model_base = "google/paligemma-3b-pt-224"
+hf_model_adapters = ['SushantGautam/Kvasir-VQA-x1-pali3b-lora']  # <------- finetuned LoRA adapter if any
+
+# 👉 You can further configure preprocessing or generation settings to control how your model should behave
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['MAX_PIXELS'] = '1003520'
+os.environ['FPS_MAX_FRAMES'] = '12'
+
+
+MAX_BATCH_SIZE = 16  # 👉 Adjust based on VRAM; engine auto-batches up to this
+
+engine = TransformersEngine(
+    hf_model_base,
+    adapters=hf_model_adapters,
+    max_batch_size=MAX_BATCH_SIZE,
+    use_hf=True
+
+)
+request_config = RequestConfig(max_tokens=128, temperature=0) ## < 👉  can customize as per your model's generation needs
 # 🏁----------------END  SUBMISISON DETAILS and MODEL LOADING -----------------🏁#
 
 start_time, post_model_mem = time.time(), get_mem()
-total_time, final_mem = round(
-    time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
+total_time, final_mem = round(time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
 model_mem_used = round(post_model_mem - initial_mem, 2)
 
-for idx, ex in enumerate(tqdm(val_dataset, desc="Validating")):
-    question = ex["question"]
-    image = ex["image"].convert(
-        "RGB") if ex["image"].mode != "RGB" else ex["image"]
-    # you have access to 'question' and 'image' variables for each example
+# ✏️✏️___________EDIT SECTION 2: ANSWER GENERATION___________✏️✏️#
 
-    # ✏️✏️___________EDIT SECTION 2: ANSWER GENERATION___________✏️✏️#
-    # 🔹 Use swift inference; keep 'answer' as str.
+# Build all InferRequests (Swift will auto-batch internally)
+infer_requests = [
+    InferRequest(
+        messages=[ #  👉 customize as per your model's generation needs
+        # {"role":"system","content":"You are a medical assistant. Answer in one short sentence."},
+        {"role": "user", "content": f"<image> {ex['question']}"}
+        ],
+        images=[ex["image"]["path"]],
+    )
+    for ex in tqdm(val_dataset, desc="Preparing", unit="samples")
+]
 
-    # Save PIL image to a temporary PNG so swift can load it via file path
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tf:
-        temp_img_path = tf.name
-        image.save(temp_img_path)
+#   ___________END SECTION 2: ANSWER GENERATION___________    #
 
-    # Compose a VQA prompt with the the question
-    msg = f"{question}" # some model might expects messages with content like "<image> ...")
+# ⛔ DO NOT EDIT any lines below from here, can edit only upto request construction above as required. ⛔
 
-    infer_req = InferRequest(
-        messages=[{'role': 'user', 'content': msg}],
-        images=[temp_img_path]
+# 👉 Swift handles batching automatically here (up to MAX_BATCH_SIZE)
+responses = engine.infer(infer_requests, request_config)
+
+for idx, (ex, resp) in enumerate(zip(val_dataset, responses)):
+    answer = resp.choices[0].message.content.strip()
+    assert isinstance(answer, str), f"Generated answer at index {idx} is not a string"
+    predictions.append(
+        {"index": idx, "img_id": ex["img_id"], "question": ex["question"], "answer": answer}
     )
 
-    # Run inference (batch size 1 here for minimal change to surrounding code)
-    resp = engine.infer([infer_req], request_config)[0]
-    answer = resp.choices[0].message.content.strip()
-
-    # 🏁________________ END ANSWER GENERATION ________________🏁#
-
-    # ⛔ DO NOT EDIT any lines below from here, can edit only upto decoding step above as required. ⛔
-    # Ensures answer is a string
-    assert isinstance(
-        answer, str), f"Generated answer at index {idx} is not a string"
-    # Appends prediction
-    predictions.append(
-        {"index": idx, "img_id": ex["img_id"], "question": ex["question"], "answer": answer})
 
 # Ensure all predictions match dataset length
-assert len(predictions) == len(
-    val_dataset), "Mismatch between predictions and dataset length"
+assert len(predictions) == len(val_dataset), "Mismatch between predictions and dataset length"
 
-total_time, final_mem = round(
-    time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
+total_time, final_mem = round(time.time() - start_time, 4), round(get_mem() - post_model_mem, 2)
 model_mem_used = round(post_model_mem - initial_mem, 2)
 
 # caulcualtes metrics
@@ -136,7 +143,6 @@ public_scores = {
 print("✨Public scores: ", public_scores)
 
 # Saves predictions to a JSON file
-
 output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_scores,
                "predictions": predictions, "total_time": total_time, "time_per_item": total_time / len(val_dataset),
                "memory_used_mb": final_mem, "model_memory_mb": model_mem_used, "gpu_name": gpu_name,
@@ -149,9 +155,9 @@ output_data = {"submission_info": SUBMISSION_INFO, "public_scores": public_score
                        "arch": platform.machine()
                    }}}
 
-
 with open("predictions_1.json", "w") as f:
     json.dump(output_data, f, indent=4)
+
 print(f"Time: {total_time}s | Mem: {final_mem}MB | Model Load Mem: {model_mem_used}MB | GPU: {gpu_name}")
 print("✅ Scripts Looks Good! Generation process completed successfully. Results saved to 'predictions_1.json'.")
 print("Next Step:\n 1) Upload this submission_task1.py script file to HuggingFace model repository.")
