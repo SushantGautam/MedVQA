@@ -58,8 +58,10 @@ SUBMISSION_INFO = {
 }
 
 # 🔹 TODO: PARTICIPANTS MUST LOAD THEIR MODEL HERE, EDIT AS NECESSARY FOR YOUR MODEL 🔹
-# 👉 You may add required library imports for your model below.
+# If you encounter issues with your model loading or generation below, please contact us:
+# https://github.com/simula/MediaEval-Medico-2026#organizers
 
+# 👉 You may add required library imports for your model below.
 hf_model_base = "google/paligemma-3b-pt-224"
 hf_model_adapters = ['SushantGautam/Kvasir-VQA-x1-pali3b-lora']  # <------- finetuned LoRA adapter if any
 
