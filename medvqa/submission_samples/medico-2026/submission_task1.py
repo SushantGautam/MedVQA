@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM
 from datasets import load_dataset, Image as HfImage
 from transformers import AutoProcessor
+from itertools import batched
 import torch
 import json
 import time
