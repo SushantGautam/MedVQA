@@ -120,7 +120,7 @@ with gr.Blocks(title="🌟 MediaEval Medico 2026 Submissions 🌟") as demo:
     gr.Markdown("""
 # 🌟 Welcome to the official submission portal for the **[MediaEval Medico 2026](https://multimediaeval.github.io/editions/2026/tasks/medico/)** challenge! 🏥🔍  
 ### 📋 [**GitHub Repository**](https://github.com/simula/MediaEval-Medico-2026) | 🔗 [**MediaEval 2026 Task Page**](https://multimediaeval.github.io/editions/2026/tasks/medico/) 
-### 📦 [**Available Datasets**](https://github.com/simula/MediaEval-Medico-2026#-dataset-overview-kvasir-vqa-x1) | 🧠 [**Task Details & Training Resources**](https://github.com/simula/MediaEval-Medico-2026?tab=readme-ov-file#-task-descriptions) | 📝 [**Submission Instructions**](https://github.com/simula/MediaEval-Medico-2026#-submission-system)  
+### 📦 [**Available Datasets**](https://github.com/simula/MediaEval-Medico-2026#dataset-overview-kvasir-vqa-x1) | 🧠 [**Task Details & Training Resources**](https://github.com/simula/MediaEval-Medico-2026?tab=readme-ov-file#task-descriptions) | 📝 [**Submission Instructions**](https://github.com/simula/MediaEval-Medico-2026#submission-system)  
 ---
 """)
 
@@ -163,7 +163,7 @@ with gr.Blocks(title="🌟 MediaEval Medico 2026 Submissions 🌟") as demo:
             f'''
             🔄 Last refreshed: {last_submission_update_time.strftime('%Y-%m-%d %H:%M:%S')} UTC |  📊 Total Submissions: {len(submissions)}
 
-            💬 For any questions or issues, [contact the organizers](https://github.com/simula/MediaEval-Medico-2026#-organizers) or check the documentation in the [GitHub repo](https://github.com/simula/MediaEval-Medico-2026).  Good luck and thank you for contributing to medical AI research! 💪🤖🌍
+            💬 For any questions or issues, [contact the organizers](https://github.com/simula/MediaEval-Medico-2026#organizers) or check the documentation in the [GitHub repo](https://github.com/simula/MediaEval-Medico-2026).  Good luck and thank you for contributing to medical AI research! 💪🤖🌍
             ''')
 
     with gr.Tab("Upload Submission", visible=False):
