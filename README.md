@@ -6,7 +6,7 @@ app_file: gradio_launcher.py
 # MedVQA
 
 A CLI tool used for multiple MedVQA competitions:
- [ImageCLEFmed-MEDVQA-GI-2025] (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025), [MediaEval-Medico-2025](https://github.com/simula/MediaEval-Medico-2025), and [MediaEval-Medico-2026](https://multimediaeval.github.io/editions/2026/tasks/medico/).
+[ImageCLEFmed-MEDVQA-GI-2025](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025), [ImageCLEFmed-MEDVQA-GI-2026](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026), [MediaEval-Medico-2025](https://github.com/simula/MediaEval-Medico-2025), and [MediaEval-Medico-2026](https://multimediaeval.github.io/editions/2026/tasks/medico/).
 
 ## Installation
 
@@ -30,5 +30,7 @@ Check respective competition repo for detailed submission instructions. For exam
 medvqa validate_and_submit --competition=medico-2025 --task=1 --repo_id=...
 # or for Medico 2026:
 medvqa validate_and_submit --competition=medico-2026 --task=1 --repo_id=...
+# or for MEDVQA-GI 2026:
+medvqa validate_and_submit --competition=gi-2026 --task=1 --repo_id=...
 ```
 where repo_id is your HuggingFace Model repo id (like SushantGautam/XXModelCheckpoint) with the submission script as required by the competition organizers, for eg, submission_task1.py file for task 1 and submission_task2.py for task 2.
