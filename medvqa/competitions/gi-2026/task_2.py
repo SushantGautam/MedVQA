@@ -134,9 +134,9 @@ else:
     # add repo_id to the submission file
     with open(file_path_to_upload, 'r', encoding='utf-8') as f:
         data = json.load(f)
-        data['repo_id'] = args.repo_id
-        with open(file_path_to_upload, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False)
+    data['repo_id'] = args.repo_id
+    with open(file_path_to_upload, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False)
     api = HfApi()
     api.update_repo_visibility(args.repo_id, private=False)  # Make public
     api.update_repo_settings(
