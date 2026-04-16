@@ -27,7 +27,7 @@ submission_file = "submission_task2.py"
 file_from_validation = "predictions_2.json"
 
 min_library = ["datasets>=3.4.1", "transformers", "evaluate", "scipy", "scikit-learn", "diffusers", "peft",
-               "rouge_score", 'tqdm', "gradio_client>=1.8.0"]
+               "rouge_score", "tqdm", "gradio_client>=1.8.0"]
 
 print("🌟 ImageCLEFmed-MEDVQA-GI-2026 🌟",
       "https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026")
