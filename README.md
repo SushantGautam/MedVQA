@@ -6,7 +6,7 @@ app_file: gradio_launcher.py
 # MedVQA
 
 A CLI tool used for multiple MedVQA competitions:
- [ImageCLEFmed-MEDVQA-GI-2025](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025), [ImageCLEFmed-MEDVQA-GI-2026](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026), [MediaEval-Medico-2025](https://github.com/simula/MediaEval-Medico-2025), and [MediaEval-Medico-2026](https://multimediaeval.github.io/editions/2026/tasks/medico/).
+[ImageCLEFmed-MEDVQA-GI-2025](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025), [ImageCLEFmed-MEDVQA-GI-2026](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026), [MediaEval-Medico-2025](https://github.com/simula/MediaEval-Medico-2025), and [MediaEval-Medico-2026](https://multimediaeval.github.io/editions/2026/tasks/medico/).
 
 ## Installation
 

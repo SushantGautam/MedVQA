@@ -24,6 +24,7 @@ print("Account token used to connect to HuggingFace: ", whoami()['name'])
 
 
 SUBMISSION_REPO = "SimulaMet/medvqa-gi-2026-submissions"
+REFRESH_INTERVAL_SECONDS = 3600
 hub_path = None
 submissions = None
 last_submission_update_time = datetime.now(timezone.utc)
@@ -77,7 +78,7 @@ def filter_submissions(task_type, search_query):
 
 
 def display_submissions(task_type="all", search_query=""):
-    if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).total_seconds() > 3600):
+    if submissions is None or ((datetime.now(timezone.utc) - last_submission_update_time).total_seconds() > REFRESH_INTERVAL_SECONDS):
         refresh_submissions()
     filtered_submissions = filter_submissions(task_type, search_query)
     return [[s["user"], s["task"], s["submitted_time"], s["public_score"]] for s in filtered_submissions]

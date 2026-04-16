@@ -101,11 +101,14 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
             insert_idx = None
         new_block = [
             'from huggingface_hub import hf_hub_download',
-            'prompt_to_real = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "real_mapping", repo_type="dataset")))',
-            'jsons__ = json.load(open(hf_hub_download("SimulaMet/Kvasir-VQA-private", "imagen-test", repo_type="dataset")))',
+            'from pathlib import Path',
+            'prompt_to_real = json.loads(Path(hf_hub_download("SimulaMet/Kvasir-VQA-private", "real_mapping", repo_type="dataset")).read_text(encoding="utf-8"))',
+            'jsons__ = json.loads(Path(hf_hub_download("SimulaMet/Kvasir-VQA-private", "imagen-test", repo_type="dataset")).read_text(encoding="utf-8"))',
         ]
         if insert_idx is not None:
             lines[insert_idx:insert_idx] = new_block
+        else:
+            sys.exit("Expected `import requests` was not found in submission file for challenge patching.")
         code = "\n".join(lines)
         with open(challenge_path, "w", encoding="utf-8") as f:
             f.write(code)
