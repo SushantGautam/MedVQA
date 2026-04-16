@@ -130,7 +130,7 @@ def refresh_page():
 # Define Gradio Interface
 with gr.Blocks(title="🌟 ImageCLEFmed-MEDVQA-GI 2026 Submissions 🌟") as demo:
     gr.Markdown("""
-# 🌟 Welcome to the official submission portal for the **[ImageCLEFmed-MEDVQA-GI 2026](https://www.imageclef.org/2026/medical/vqa)** challenge! 🏥🔍
+# 🌟 Welcome to the official submission portal for the **[ImageCLEFmed-MEDVQA-GI 2026](https://www.imageclef.org/2026/medical/medvqa-gi)** challenge! 🏥🔍
 ### 📋 [**GitHub Repository**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026) | 📝 [**ImageCLEF Registration**](https://www.imageclef.org/2026#registration)
 ### 📦 [**Available Datasets**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026#data) | 🧠 [**Task Details**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026#task-descriptions) | 📮 [**Schedule**](https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2026#preliminary-schedule)
 ---
