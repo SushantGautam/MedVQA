@@ -8,6 +8,7 @@ import shutil
 import os
 import glob
 from pathlib import Path
+from tempfile import gettempdir
 from huggingface_hub import whoami
 import platform
 
@@ -85,10 +86,20 @@ def display_submissions(task_type="all", search_query=""):
 def add_submission(file):
     global submissions
     try:
-        with open(file, 'r', encoding='utf-8') as f:
+        uploaded_path = Path(file).resolve()
+        tmp_root = Path(gettempdir()).resolve()
+
+        if not uploaded_path.is_file():
+            raise FileNotFoundError("Uploaded file was not found")
+        if uploaded_path.suffix.lower() != ".json":
+            raise ValueError("Only .json files are accepted")
+        if tmp_root not in uploaded_path.parents:
+            raise ValueError("Invalid upload path")
+
+        with uploaded_path.open('r', encoding='utf-8') as f:
             data = json.load(f)
 
-        filename = os.path.basename(file)
+        filename = uploaded_path.name
         username, sub_timestamp, task = filename.replace(
             ".json", "").split("-_-_-")
         submission_time = datetime.fromtimestamp(
@@ -101,7 +112,7 @@ def add_submission(file):
 
         upload_file(
             repo_type="dataset",
-            path_or_fileobj=file,
+            path_or_fileobj=str(uploaded_path),
             path_in_repo=task + "/" + filename,
             repo_id=SUBMISSION_REPO
         )

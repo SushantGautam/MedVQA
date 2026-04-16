@@ -11,7 +11,7 @@ import json
 from huggingface_hub import HfApi, grant_access
 import re
 
-HF_GATE_ACESSLIST = ["SushantGautam",
+HF_GATE_ACCESSLIST = ["SushantGautam",
                      "stevenah", "vlbthambawita"]
 
 MEDVQA_SUBMIT = True if os.environ.get(
@@ -141,7 +141,7 @@ else:
     api.update_repo_visibility(args.repo_id, private=False)  # Make public
     api.update_repo_settings(
         args.repo_id, gated='manual')  # Enable gated access
-    for user in HF_GATE_ACESSLIST:
+    for user in HF_GATE_ACCESSLIST:
         try:
             grant_access(args.repo_id, user)  # Grant access
         except Exception as e:
@@ -149,7 +149,7 @@ else:
     print(
         f'''✅ {args.repo_id} model is now made public, but gated, and is shared with organizers.
         You should not make the model private or remove/update it until the competition results are announced.
-        Feel feel to re-submit the task if you change the model on the repository.
+        Feel free to re-submit the task if you change the model on the repository.
         We will notify you if there are any issues with the submission.
         ''')
 
@@ -183,5 +183,5 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"✅ Copied and processed predictions to: {out_json}")
     else:
-        print("❌ predictions_1.json not found in snapshot directory!")
-    # === End: Post-processing predictions_1.json ===
+        print("❌ predictions_2.json not found in snapshot directory!")
+    # === End: Post-processing predictions_2.json ===
