@@ -6,7 +6,7 @@ import os
 import subprocess as sp
 import time
 from datetime import datetime, timezone
-import shutil  # Add this import
+import shutil
 import json
 from huggingface_hub import HfApi, grant_access
 import re
@@ -130,7 +130,7 @@ else:
     file_path_to_upload = os.path.join(
         snap_dir, f"{hf_username}-_-_-{current_timestamp}-_-_-task2.json")
     shutil.copy(os.path.join(snap_dir, file_from_validation),
-                file_path_to_upload)  # Use shutil.copy here
+                file_path_to_upload)
     # add repo_id to the submission file
     with open(file_path_to_upload, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -184,4 +184,3 @@ if os.environ.get("_MEDVQA_CHALLENGE_EVALUATE_FLAG_", "FALSE") == "TRUE":
         print(f"✅ Copied and processed predictions to: {out_json}")
     else:
         print("❌ predictions_2.json not found in snapshot directory!")
-    # === End: Post-processing predictions_2.json ===
