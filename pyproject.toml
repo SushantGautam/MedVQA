@@ -7,8 +7,8 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-  "huggingface_hub",
-  "huggingface_hub[hf_transfer]",
+  "huggingface_hub>=1.13.0",
+  "huggingface_hub[hf_transfer]>=1.13.0",
   "gradio_client>=1.8.0",
 ]
 description = "Competition Submission CLI for ImageCLEFmed-MedVQA-GI-2025 (https://github.com/simula/ImageCLEFmed-MEDVQA-GI-2025)"
@@ -16,7 +16,7 @@ license = {text = "MIT"}
 name = "medvqa"
 readme = "README.md"
 requires-python = ">=3.6"
-version = "0.15.6"
+version = "0.15.7"
 
 [project.scripts]
 medvqa = "medvqa.cli:main"

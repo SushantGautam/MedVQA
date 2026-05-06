@@ -106,7 +106,7 @@ else:
 
     # Make the repo public (but gated) and grant access to organizers
     api = HfApi()
-    api.update_repo_visibility(args.repo_id, private=False)
+    api.update_repo_settings(args.repo_id, private=False)
     api.update_repo_settings(args.repo_id, gated='manual')
     for user in HF_GATE_ACESSLIST:
         try:

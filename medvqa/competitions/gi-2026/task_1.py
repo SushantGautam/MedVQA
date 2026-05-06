@@ -113,9 +113,11 @@ else:
     with open(file_path_to_upload, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False)
     api = HfApi()
-    api.update_repo_visibility(args.repo_id, private=False)  # Make public
-    api.update_repo_settings(
-        args.repo_id, gated='manual')  # Enable gated access
+    try:
+        api.update_repo_settings(args.repo_id, private=False)
+    except TypeError:
+        api.update_repo_settings(args.repo_id, repo_visibility="public")
+    api.update_repo_settings(args.repo_id, gated='manual')  # Enable gated access
     for user in HF_GATE_ACCESSLIST:
         try:
             grant_access(args.repo_id, user)  # Grant access
